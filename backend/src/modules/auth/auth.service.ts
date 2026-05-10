@@ -7,27 +7,36 @@ import { sendResetEmail } from '../../utils/email';
 const refreshTokenStore = new Map<string, string>();
 
 export class AuthService {
-  static async register(payload: { email: string; password: string; name: string }) {
+  static async register(payload: { email: string; password: string; name: string; role?: string }) {
     const existing = await UserModel.findOne({ email: payload.email });
     if (existing) throw new Error('Email already registered');
 
     const passwordHash = await bcrypt.hash(payload.password, 12);
-    const user = await UserModel.create({ ...payload, password: passwordHash, roles: ['customer'] });
+    const user = await UserModel.create({
+      ...payload,
+      password: passwordHash,
+      roles: payload.role ? [payload.role] : ['customer'],
+    });
 
     const accessToken = signAccessToken({ userId: user.id, roles: user.roles });
     const refreshToken = signRefreshToken({ userId: user.id });
     refreshTokenStore.set(user.id, refreshToken);
 
-    return { user, accessToken, refreshToken };
+    return {
+      user,
+      accessToken,
+      refreshToken,
+      token: accessToken, // for backward compatibility with admin app
+    };
   }
 
   static async authenticate(payload: { email: string; password: string }) {
     const user = await UserModel.findOne({ email: payload.email }).select('+password');
     if (!user) throw new Error('Invalid credentials');
 
-     if (!user.password) {
-    throw new Error('Password not found')
-  }
+    if (!user.password) {
+      throw new Error('Password not found');
+    }
 
     const match = await bcrypt.compare(payload.password, user.password);
     if (!match) throw new Error('Invalid credentials');
@@ -36,7 +45,12 @@ export class AuthService {
     const refreshToken = signRefreshToken({ userId: user.id });
     refreshTokenStore.set(user.id, refreshToken);
 
-    return { user, accessToken, refreshToken };
+    return {
+      user,
+      accessToken,
+      refreshToken,
+      token: accessToken, // for backward compatibility with admin app
+    };
   }
 
   static async refresh(token: string) {
@@ -48,7 +62,7 @@ export class AuthService {
     const refreshToken = signRefreshToken({ userId: user.id });
     refreshTokenStore.set(user.id, refreshToken);
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, token: accessToken };
   }
 
   static async revokeTokens(token: string) {

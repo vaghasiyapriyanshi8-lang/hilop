@@ -1,5 +1,3 @@
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 export type AuthStackParamList = {
   Login: undefined;
