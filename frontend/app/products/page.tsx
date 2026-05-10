@@ -108,9 +108,8 @@ export default function ProductsPage() {
       try {
         const response = await productsService.getProducts({
           search: searchQuery,
-          sort: sortBy === 'price-low' ? 'price_asc' : sortBy === 'price-high' ? 'price_desc' : 'trending'
         })
-        setProducts(response.products || [])
+        setProducts(response.data || [])
       } catch (error) {
         console.error('Failed to fetch products:', error)
       } finally {

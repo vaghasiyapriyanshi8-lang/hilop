@@ -7,15 +7,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { ProfileStackParamList } from '../../navigation/types';
+import { CartStackParamList } from '../../navigation/types';
 import { Colors, Typography, Spacing } from '../../theme';
 import { apiClient } from '../../services/api/client';
 import { ENDPOINTS } from '../../constants/api';
 import { Order } from '../../types';
 
 type Props = {
-  navigation: NativeStackNavigationProp<ProfileStackParamList, 'OrderDetail'>;
-  route: RouteProp<ProfileStackParamList, 'OrderDetail'>;
+  navigation: NativeStackNavigationProp<CartStackParamList, 'OrderSuccess'>;
+  route: RouteProp<CartStackParamList, 'OrderSuccess'>;
 };
 
 const STATUS_STEPS = ['pending', 'processing', 'shipped', 'delivered'];

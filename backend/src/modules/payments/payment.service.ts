@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
 import { config } from '../../config';
 
-const stripe = new Stripe(config.stripeSecretKey, { apiVersion: '2024-08-01' });
+const stripe = new Stripe(config.stripeSecretKey, { apiVersion: '2024-04-10' as any });
 
 export class PaymentService {
   static async createStripeSession(payload: { amount: number; currency: string; userId: string }) {
