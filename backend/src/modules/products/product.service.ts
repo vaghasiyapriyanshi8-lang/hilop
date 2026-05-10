@@ -38,4 +38,13 @@ export class ProductService {
   static async delete(id: string) {
     return ProductModel.findByIdAndDelete(id);
   }
+
+  static async getCategories() {
+    const categories = await ProductModel.distinct('category');
+    return categories.map((cat) => ({
+      id: cat,
+      name: cat.charAt(0).toUpperCase() + cat.slice(1),
+      slug: cat,
+    }));
+  }
 }

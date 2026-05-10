@@ -43,4 +43,9 @@ export class ProductController {
     await ProductService.delete(req.params.id);
     res.status(204).send();
   }
+
+  static async getCategories(req: Request, res: Response) {
+    const categories = await ProductService.getCategories();
+    res.status(200).json({ data: categories });
+  }
 }

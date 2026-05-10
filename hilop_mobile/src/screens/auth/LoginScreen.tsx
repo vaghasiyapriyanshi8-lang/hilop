@@ -204,4 +204,4 @@ const styles = StyleSheet.create({
   registerButton: { alignItems: 'center' },
   registerText: { ...Typography.body2, color: Colors.text.secondary },
   registerLink: { color: Colors.primary, fontWeight: '700' },
-});
+}); 

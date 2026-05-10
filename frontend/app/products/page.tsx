@@ -2,46 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Sliders, ArrowUpDown } from 'lucide-react'
+import { Sliders, ArrowUpDown, Heart, Eye, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Heart, Eye } from 'lucide-react'
-
-interface Product {
-  id: string
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  rating: number
-  reviews: number
-}
-
-// Mock data
-const MOCK_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'Elegance Pro',
-    price: 1299,
-    originalPrice: 1599,
-    image: 'https://www.rolex.com/content/dam/rolex/en-us/world-of-rolex/about-rolex-header.jpg',
-    rating: 4.8,
-    reviews: 124,
-  },
-  {
-    id: '2',
-    name: 'Urban Classic',
-    price: 899,
-    originalPrice: 1099,
-    image: 'https://www.rolex.com/content/dam/rolex/en-us/world-of-rolex/about-rolex-header.jpg',
-    rating: 4.9,
-    reviews: 89,
-  },
-  // Add more products as needed
-]
+import { productsService } from '@/services/api/products'
+import { Product } from '@/types'
 
 function ProductCard({ product }: { product: Product }) {
   const [isWishlisted, setIsWishlisted] = useState(false)
@@ -54,7 +22,7 @@ function ProductCard({ product }: { product: Product }) {
       <Card className="overflow-hidden group">
         <div className="relative h-64 overflow-hidden bg-gray-100">
           <Image
-            src={product.image}
+            src={product.images?.[0] || 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=1000'}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -77,18 +45,19 @@ function ProductCard({ product }: { product: Product }) {
             >
               <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
             </Button>
-           <Button
-  asChild
-  size="icon"
-  className="rounded-full bg-hilop-green hover:bg-hilop-green/90"
->
-  <Link href={`/products/${product.id}`}>
-    <Eye className="w-5 h-5 text-black" />
-  </Link>
-</Button>
+            <Button
+              asChild
+              size="icon"
+              className="rounded-full bg-hilop-green hover:bg-hilop-green/90"
+            >
+              <Link href={`/products/${product.slug}`}>
+                <Eye className="w-5 h-5 text-white" />
+              </Link>
+            </Button>
           </motion.div>
         </div>
         <div className="p-4">
+          <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{product.brand}</div>
           <h3 className="font-semibold text-lg mb-2 line-clamp-2">{product.name}</h3>
           <div className="flex items-center gap-2 mb-3">
             <div className="flex items-center">
@@ -96,30 +65,30 @@ function ProductCard({ product }: { product: Product }) {
                 <span
                   key={i}
                   className={`text-sm ${
-                    i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'
+                    i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'
                   }`}
                 >
                   ★
                 </span>
               ))}
             </div>
-            <span className="text-sm text-gray-500">({product.reviews})</span>
+            <span className="text-sm text-gray-500">({product.reviewCount || 0})</span>
           </div>
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-xl font-bold text-hilop-green">${product.price}</span>
+            <span className="text-xl font-bold text-hilop-green">${product.price.toLocaleString()}</span>
             {product.originalPrice && (
-              <span className="text-sm text-gray-400 line-through">${product.originalPrice}</span>
+              <span className="text-sm text-gray-400 line-through">${product.originalPrice.toLocaleString()}</span>
             )}
           </div>
-         <Button
-  asChild
-  variant="outline"
-  className="w-full hover:bg-hilop-green hover:text-black hover:border-hilop-green"
->
-  <Link href={`/products/${product.id}`}>
-    View Details
-  </Link>
-</Button>
+          <Button
+            asChild
+            variant="outline"
+            className="w-full hover:bg-hilop-green hover:text-white hover:border-hilop-green"
+          >
+            <Link href={`/products/${product.slug}`}>
+              View Details
+            </Link>
+          </Button>
         </div>
       </Card>
     </motion.div>
@@ -127,33 +96,34 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState(MOCK_PRODUCTS)
-  const [filteredProducts, setFilteredProducts] = useState(MOCK_PRODUCTS)
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('trending')
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
-    let filtered = products
-
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    const fetchProducts = async () => {
+      setLoading(true)
+      try {
+        const response = await productsService.getProducts({
+          search: searchQuery,
+          sort: sortBy === 'price-low' ? 'price_asc' : sortBy === 'price-high' ? 'price_desc' : 'trending'
+        })
+        setProducts(response.products || [])
+      } catch (error) {
+        console.error('Failed to fetch products:', error)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    // Sort
-    if (sortBy === 'price-low') {
-      filtered = [...filtered].sort((a, b) => a.price - b.price)
-    } else if (sortBy === 'price-high') {
-      filtered = [...filtered].sort((a, b) => b.price - a.price)
-    } else if (sortBy === 'rating') {
-      filtered = [...filtered].sort((a, b) => b.rating - a.rating)
-    }
+    const timer = setTimeout(() => {
+      fetchProducts()
+    }, 500)
 
-    setFilteredProducts(filtered)
-  }, [searchQuery, sortBy, products])
+    return () => clearTimeout(timer)
+  }, [searchQuery, sortBy])
 
   return (
     <div className="min-h-screen">
@@ -215,38 +185,48 @@ export default function ProductsPage() {
 
             {/* Results Count */}
             <span className="text-sm text-gray-600">
-              {filteredProducts.length} products
+              {products.length} products
             </span>
           </motion.div>
 
-          {/* Products Grid */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ staggerChildren: 0.05 }}
-          >
-            {filteredProducts.map((product, index) => (
+          {/* Loading State */}
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <Loader2 className="w-10 h-10 animate-spin text-hilop-green" />
+              <p className="text-gray-500">Loading collection...</p>
+            </div>
+          ) : (
+            <>
+              {/* Products Grid */}
               <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ staggerChildren: 0.05 }}
               >
-                <ProductCard product={product} />
+                {products.map((product, index) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <ProductCard product={product} />
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
-          </motion.div>
 
-          {/* Empty State */}
-          {filteredProducts.length === 0 && (
-            <motion.div
-              className="text-center py-20"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <p className="text-gray-500 text-lg">No products found</p>
-            </motion.div>
+              {/* Empty State */}
+              {products.length === 0 && (
+                <motion.div
+                  className="text-center py-20"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <p className="text-gray-500 text-lg">No products found</p>
+                </motion.div>
+              )}
+            </>
           )}
         </div>
       </section>

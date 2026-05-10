@@ -38,9 +38,13 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     try {
-      const result = await authService.login(data)
-      localStorage.setItem('accessToken', result.tokens.accessToken)
-      localStorage.setItem('refreshToken', result.tokens.refreshToken)
+      const result = await authService.login(data) as any
+      const accessToken = result.accessToken || result.tokens?.accessToken
+      const refreshToken = result.refreshToken || result.tokens?.refreshToken
+
+      if (accessToken) localStorage.setItem('accessToken', accessToken)
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken)
+
       login(result.user)
       toast({
         title: 'Success',

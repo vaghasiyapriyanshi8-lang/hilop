@@ -5,6 +5,7 @@ import { AuthMiddleware } from '../../core/middlewares/auth';
 const router = Router();
 
 router.get('/', ProductController.list);
+router.get('/categories', ProductController.getCategories);
 router.get('/search', ProductController.search);
 router.get('/:slug', ProductController.getProduct);
 router.post('/', AuthMiddleware.requireAuth, AuthMiddleware.restrictTo('admin'), ProductController.createProduct);

@@ -60,7 +60,7 @@ export default function SignupPage() {
       })
       toast({
         title: 'Success',
-        description: 'Account created! Please check your email to verify.',
+        description: 'Account created successfully! You can now log in.',
       })
       router.push('/auth/login')
     } catch (error: any) {
