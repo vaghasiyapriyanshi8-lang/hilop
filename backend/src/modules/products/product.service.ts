@@ -10,10 +10,10 @@ export class ProductService {
     if (query.category) filter.category = query.category;
     if (query.search) filter.$text = { $search: query.search };
 
-    const sort = query.sort === 'price_asc' ? { price: 1 } : query.sort === 'price_desc' ? { price: -1 } : { createdAt: -1 };
+    const sort = query.sort === 'price_asc' ? { price: 1 as const } : query.sort === 'price_desc' ? { price: -1 as const } : { createdAt: -1 as const };
 
     const products = await ProductModel.find(filter)
-      .sort(sort)
+      .sort(sort as any)
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();

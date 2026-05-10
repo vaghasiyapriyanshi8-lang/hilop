@@ -133,7 +133,7 @@ export default function SearchScreen({ navigation }: Props) {
   const [sort, setSort] = useState('');
   const [priceRange, setPriceRange] = useState(0);
   const [history, setHistory] = useState<string[]>(getHistory);
-  const debounceTimer = useRef<NodeJS.Timeout>();
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const handleQueryChange = useCallback((text: string) => {
     setQuery(text);

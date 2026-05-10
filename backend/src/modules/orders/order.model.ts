@@ -39,7 +39,7 @@ const itemSchema = new Schema(
 
 const orderSchema = new Schema<OrderDocument>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    userId: { type: 'ObjectId' as any, ref: 'User', required: true, index: true },
     items: { type: [itemSchema], required: true },
     subtotal: { type: Number, required: true },
     tax: { type: Number, required: true },

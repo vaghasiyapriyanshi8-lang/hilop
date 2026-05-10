@@ -90,7 +90,7 @@ export default function AllProductsScreen({ navigation, route }: Props) {
     }
   };
 
-  const { data, isLoading, isFetchingNextPage } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['allProducts', type, sort, page],
     queryFn: () =>
       apiClient.get(buildEndpoint(), {
