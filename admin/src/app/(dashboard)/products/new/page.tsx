@@ -50,7 +50,7 @@ export default function NewProductPage() {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
-  } = useForm<ProductFormValues>({
+  } = useForm({
     resolver: zodResolver(productSchema),
     defaultValues: {
       status: 'active',
@@ -78,22 +78,28 @@ export default function NewProductPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: ProductFormValues) => {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === 'variants') {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, String(value));
-        }
-      });
-      
-      images.forEach(image => {
-        formData.append('images', image);
-      });
+      // If there are images, we use FormData. Otherwise, simple JSON.
+      if (images.length > 0) {
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+          if (key === 'variants') {
+            formData.append(key, JSON.stringify(value));
+          } else {
+            formData.append(key, String(value));
+          }
+        });
+        
+        images.forEach(image => {
+          formData.append('images', image);
+        });
 
-      return apiClient.post('/products', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+        return apiClient.post('/products', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } else {
+        // Just send as JSON if no images are selected
+        return apiClient.post('/products', data);
+      }
     },
     onSuccess: () => {
       toast.success('Product created successfully');
@@ -334,9 +340,10 @@ export default function NewProductPage() {
                   )}
                 >
                   <option value="">Select Category</option>
-                  <option value="luxury-watches">Luxury Watches</option>
+                  <option value="dress-watches">Dress Watches</option>
+                  <option value="luxury-collection">Luxury Collection</option>
                   <option value="smart-watches">Smart Watches</option>
-                  <option value="accessories">Accessories</option>
+                  <option value="digital-watches">Digital Watches</option>
                 </select>
                 {errors.category && <p className="mt-1 text-xs text-red-500">{errors.category.message}</p>}
               </div>

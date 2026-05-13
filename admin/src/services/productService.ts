@@ -2,11 +2,15 @@ import apiClient from './api';
 
 export const productService = {
   getProducts: async (params: { page?: number; limit?: number; search?: string; category?: string; sort?: string }) => {
-    const response = await apiClient.get('/products', { params });
+    const response = await apiClient.get('/products/admin/all', { params });
     return response.data;
   },
   getProductBySlug: async (slug: string) => {
     const response = await apiClient.get(`/products/${slug}`);
+    return response.data;
+  },
+  getProductById: async (id: string) => {
+    const response = await apiClient.get(`/products/admin/by-id/${id}`);
     return response.data;
   },
   createProduct: async (data: any) => {

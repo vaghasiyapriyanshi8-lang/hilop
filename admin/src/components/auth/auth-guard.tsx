@@ -12,7 +12,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const isPublicPath = pathname === '/login' || pathname === '/signup';
+    const isPublicPath = pathname === '/login';
     
     if (!loading && !isAuthenticated && !isPublicPath) {
       router.push('/login');
@@ -22,7 +22,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated, loading, pathname, router]);
 
-  if (loading || (!isAuthenticated && pathname !== '/login' && pathname !== '/signup')) {
+  if (loading || (!isAuthenticated && pathname !== '/login')) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <Loader2 className="h-10 w-10 animate-spin text-blue-600" />

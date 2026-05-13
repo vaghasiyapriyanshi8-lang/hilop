@@ -10,7 +10,6 @@ import { setCredentials } from '@/redux/slices/authSlice';
 import { toast } from 'sonner';
 import apiClient from '@/services/api';
 import { Loader2, Lock, Mail } from 'lucide-react';
-import Link from 'next/link';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -119,14 +118,7 @@ export default function LoginPage() {
               </label>
             </div>
 
-            <div className="text-sm">
-              <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500 mr-4">
-                Sign up
-              </Link>
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                Forgot your password?
-              </a>
-            </div>
+           
           </div>
 
           <div>

@@ -29,7 +29,7 @@ const userSchema = new Schema<UserDocument>(
     name: { type: String, required: true, trim: true, index: true },
     email: { type: String, required: true, unique: true, lowercase: true, index: true },
     password: { type: String, required: true, select: false },
-    roles: { type: [String], default: ['customer'] },
+    roles: { type: [String], default: ['user'] },
     avatar: { type: String },
     addressBook: { type: [addressSchema], default: [] },
     isBlocked: { type: Boolean, default: false },

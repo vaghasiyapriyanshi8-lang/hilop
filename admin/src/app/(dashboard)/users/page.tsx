@@ -12,7 +12,8 @@ import {
   Mail,
   ChevronLeft,
   ChevronRight,
-  Shield
+  Shield,
+  Loader2
 } from 'lucide-react';
 import { useState } from 'react';
 import { formatDate } from '@/utils/format';
@@ -24,10 +25,12 @@ export default function UsersPage() {
   const [search, setSearch] = useState('');
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useQuery({
+  const { data: response, isLoading } = useQuery({
     queryKey: ['users', page, search],
     queryFn: () => userService.getUsers({ page, search }),
   });
+
+  const users = response?.data || [];
 
   const toggleStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) => 
@@ -45,6 +48,27 @@ export default function UsersPage() {
       toast.success('User deleted successfully');
     },
   });
+
+  const sendEmailMutation = useMutation({
+    mutationFn: ({ id, subject, message }: { id: string; subject: string; message: string }) =>
+      userService.sendEmail(id, subject, message),
+    onSuccess: () => {
+      toast.success('Email sent successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to send email');
+    },
+  });
+
+  const handleSendEmail = (user: any) => {
+    const subject = prompt(`Enter subject for email to ${user.name}:`, 'Message from Hilop Admin');
+    if (!subject) return;
+    
+    const message = prompt(`Enter message for ${user.name}:`);
+    if (!message) return;
+
+    sendEmailMutation.mutate({ id: user._id || user.id, subject, message });
+  };
 
   return (
     <div className="space-y-6">
@@ -108,8 +132,8 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                      {user.role === 'admin' && <Shield className="w-4 h-4 mr-1.5 text-blue-500" />}
-                      <span className="capitalize">{user.role}</span>
+                      {user.roles?.includes('admin') && <Shield className="w-4 h-4 mr-1.5 text-blue-500" />}
+                      <span className="capitalize">{user.roles?.join(', ') || 'Customer'}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -129,10 +153,16 @@ export default function UsersPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <button 
-                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        onClick={() => handleSendEmail(user)}
+                        disabled={sendEmailMutation.isPending}
+                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors disabled:opacity-50"
                         title="Send Email"
                       >
-                        <Mail className="w-4 h-4" />
+                        {sendEmailMutation.isPending && sendEmailMutation.variables?.id === (user._id || user.id) ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Mail className="w-4 h-4" />
+                        )}
                       </button>
                       <button 
                         onClick={() => toggleStatusMutation.mutate({ id: user._id || user.id, status: user.isBlocked ? 'active' : 'blocked' })}

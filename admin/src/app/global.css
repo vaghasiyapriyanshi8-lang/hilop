@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #10b981;
+  --color-primary: var(--color-primary, #3b82f6);
   --color-surface: #050505;
 }
 
@@ -9,6 +9,7 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+    --color-primary: #3b82f6;
   }
 
   .dark {

@@ -4,7 +4,11 @@ import { config } from '../../config';
 const stripe = new Stripe(config.stripeSecretKey, { apiVersion: '2024-04-10' as any });
 
 export class PaymentService {
-  static async createStripeSession(payload: { amount: number; currency: string; userId: string }) {
+  static async createStripeSession(payload: {
+    amount: number;
+    currency: string;
+    userId: string;
+  }): Promise<unknown> {
     return stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',

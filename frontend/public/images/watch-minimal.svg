@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="Minimalist watch">
+  <rect width="640" height="640" fill="#f7f7f5"/>
+  <circle cx="320" cy="320" r="246" fill="#e9ebe6"/>
+  <g transform="translate(320 320) rotate(-7)">
+    <rect x="-44" y="-250" width="88" height="164" rx="26" fill="#1b1d1a"/>
+    <rect x="-44" y="86" width="88" height="164" rx="26" fill="#1b1d1a"/>
+    <circle r="154" fill="#20231f"/>
+    <circle r="127" fill="#fdfdf9"/>
+    <path d="M0 0v-82M0 0l70 0" stroke="#101410" stroke-width="7" stroke-linecap="round"/>
+    <circle r="6" fill="#22c55e"/>
+  </g>
+</svg>

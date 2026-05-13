@@ -6,7 +6,7 @@ import { FlashSale } from '@/components/sections/flash-sale'
 
 export default function HomePage() {
   return (
-    <div className="space-y-16">
+    <div className="overflow-hidden bg-white">
       <Hero />
       <FeaturedProducts />
       <Categories />

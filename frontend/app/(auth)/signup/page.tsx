@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { authService } from '@/services/api/auth'
 import { useToast } from '@/hooks/use-toast'
+import { useAuthStore } from '@/store/auth'
 
 const signupSchema = z
   .object({
@@ -30,6 +31,7 @@ type SignupFormData = z.infer<typeof signupSchema>
 export default function SignupPage() {
   const router = useRouter()
   const { toast } = useToast()
+  const { login } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
 
@@ -53,20 +55,31 @@ export default function SignupPage() {
 
     setIsLoading(true)
     try {
-      await authService.signup({
+      const result = await authService.signup({
         name: data.name,
         email: data.email,
         password: data.password,
       })
+      const accessToken = result.accessToken || result.tokens?.accessToken
+      const refreshToken = result.refreshToken || result.tokens?.refreshToken
+
+      if (result.user?.role && result.user.role !== 'user') {
+        throw new Error('Frontend signup is only available for user accounts.')
+      }
+
+      if (accessToken) localStorage.setItem('accessToken', accessToken)
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken)
+      login(result.user)
+
       toast({
         title: 'Success',
-        description: 'Account created successfully! You can now log in.',
+        description: 'Account created successfully!',
       })
-      router.push('/auth/login')
+      router.push('/')
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.message || 'Signup failed',
+        description: error.response?.data?.message || error.message || 'Signup failed',
         variant: 'destructive',
       })
     } finally {
@@ -182,7 +195,7 @@ export default function SignupPage() {
           {/* Sign In Link */}
           <p className="text-center mt-6 text-gray-600">
             Already have an account?{' '}
-            <Link href="/auth/login" className="text-hilop-green font-semibold hover:underline">
+            <Link href="/login" className="text-hilop-green font-semibold hover:underline">
               Sign in
             </Link>
           </p>

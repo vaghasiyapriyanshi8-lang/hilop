@@ -5,151 +5,91 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Heart, Eye } from 'lucide-react'
-import { useState } from 'react'
+import { Eye, Heart, Loader2, Star } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { productsService } from '@/services/api/products'
+import { Product } from '@/types'
 
-// Mock data - replace with actual API call
-const FEATURED_PRODUCTS = [
-  {
-    id: '1',
-    name: 'Elegance Pro',
-    price: 1299,
-    originalPrice: 1599,
-    image: 'https://www.rolex.com/content/dam/rolex/en-us/world-of-rolex/about-rolex-header.jpg',
-    rating: 4.8,
-    reviews: 124,
-    inStock: true,
-  },
-  {
-    id: '2',
-    name: 'Urban Classic',
-    price: 899,
-    originalPrice: 1099,
-    image: 'https://www.rolex.com/content/dam/rolex/en-us/world-of-rolex/about-rolex-header.jpg',
-    rating: 4.9,
-    reviews: 89,
-    inStock: true,
-  },
-  {
-    id: '3',
-    name: 'Digital Luxury',
-    price: 699,
-    image: 'https://www.rolex.com/content/dam/rolex/en-us/world-of-rolex/about-rolex-header.jpg',
-    rating: 4.7,
-    reviews: 156,
-    inStock: true,
-  },
-  {
-    id: '4',
-    name: 'Minimalist',
-    price: 599,
-    originalPrice: 799,
-    image: 'https://www.rolex.com/content/dam/rolex/en-us/world-of-rolex/about-rolex-header.jpg',
-    rating: 4.6,
-    reviews: 203,
-    inStock: true,
-  },
-]
-
-function ProductCard({ product }: { product: (typeof FEATURED_PRODUCTS)[0] }) {
+function ProductCard({ product }: { product: Product }) {
   const [isWishlisted, setIsWishlisted] = useState(false)
-
+  const image = product.images?.[0] || '/images/watch-elegance.svg'
+  const productHref = `/products/${product.slug || product.id}`
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
 
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Card className="overflow-hidden group">
-        {/* Image Container */}
-        <div className="relative h-64 overflow-hidden bg-gray-100">
+    <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.3 }}>
+      <Card className="group h-full overflow-hidden transition-all hover:border-hilop-green/30 hover:shadow-xl">
+        <div className="relative aspect-square overflow-hidden bg-gray-100">
           <Image
-            src={product.image}
+            src={image}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-300"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
 
-          {/* Discount Badge */}
           {discount > 0 && (
-            <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            <div className="absolute right-3 top-3 rounded-full bg-red-500 px-3 py-1 text-sm font-semibold text-white">
               -{discount}%
             </div>
           )}
 
-          {/* Stock Status */}
           {!product.inStock && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span className="text-white font-semibold">Out of Stock</span>
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <span className="font-semibold text-white">Out of Stock</span>
             </div>
           )}
 
-          {/* Actions */}
-          <motion.div
-            className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center gap-3"
-            initial={{ opacity: 0 }}
-            whileHover={{ opacity: 1 }}
-          >
+          <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/35 group-hover:opacity-100">
             <Button
               size="icon"
               variant="secondary"
               className="rounded-full"
               onClick={() => setIsWishlisted(!isWishlisted)}
+              aria-label="Toggle wishlist"
             >
-              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
+              <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
             </Button>
-            <Link href={`/products/${product.id}`}>
-              <Button size="icon" className="rounded-full bg-hilop-green hover:bg-hilop-green/90">
-                <Eye className="w-5 h-5 text-black" />
-              </Button>
-            </Link>
-          </motion.div>
+            <Button asChild size="icon" className="rounded-full bg-hilop-green hover:bg-hilop-green/90" aria-label="View product">
+              <Link href={productHref}>
+                <Eye className="h-5 w-5 text-black" />
+              </Link>
+            </Button>
+          </div>
         </div>
 
-        {/* Content */}
         <div className="p-4">
-          <h3 className="font-semibold text-lg mb-2 line-clamp-2">{product.name}</h3>
+          <h3 className="mb-2 line-clamp-2 text-lg font-semibold">{product.name}</h3>
 
-          {/* Rating */}
-          <div className="flex items-center gap-2 mb-3">
+          <div className="mb-3 flex items-center gap-2">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
-                <span
+                <Star
                   key={i}
-                  className={`text-sm ${
-                    i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'
+                  className={`h-4 w-4 ${
+                    i < Math.floor(product.rating || 0)
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'fill-gray-200 text-gray-200'
                   }`}
-                >
-                  ★
-                </span>
+                />
               ))}
             </div>
-            <span className="text-sm text-gray-500">({product.reviews})</span>
+            <span className="text-sm text-gray-500">({product.reviewCount || 0})</span>
           </div>
 
-          {/* Price */}
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xl font-bold text-hilop-green">${product.price}</span>
+          <div className="mb-4 flex items-center gap-2">
+            <span className="text-xl font-bold text-hilop-green">${product.price.toLocaleString()}</span>
             {product.originalPrice && (
               <span className="text-sm text-gray-400 line-through">
-                ${product.originalPrice}
+                ${product.originalPrice.toLocaleString()}
               </span>
             )}
           </div>
 
-          {/* CTA */}
-          <Link href={`/products/${product.id}`} className="w-full">
-            <Button
-              variant="outline"
-              className="w-full hover:bg-hilop-green hover:text-black hover:border-hilop-green"
-              disabled={!product.inStock}
-            >
-              View Details
-            </Button>
-          </Link>
+          <Button asChild variant="outline" className="w-full hover:border-hilop-green hover:bg-hilop-green hover:text-black">
+            <Link href={productHref}>View Details</Link>
+          </Button>
         </div>
       </Card>
     </motion.div>
@@ -157,57 +97,76 @@ function ProductCard({ product }: { product: (typeof FEATURED_PRODUCTS)[0] }) {
 }
 
 export function FeaturedProducts() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await productsService.getFeaturedProducts()
+        setProducts(data)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
+    <section id="featured" className="px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         <motion.div
-          className="text-center mb-12"
+          className="mx-auto mb-10 max-w-2xl text-center sm:mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-4xl font-bold mb-4">Featured Collection</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Explore our handpicked selection of luxury watches that define elegance and precision.
+          <h2 className="mb-3 text-3xl font-bold sm:text-4xl">Featured Collection</h2>
+          <p className="text-sm leading-6 text-gray-600 sm:text-base">
+            Explore the latest watches added by the Hilop admin team.
           </p>
         </motion.div>
 
-        {/* Products Grid */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ staggerChildren: 0.1 }}
-          viewport={{ once: true }}
-        >
-          {FEATURED_PRODUCTS.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <ProductCard product={product} />
-            </motion.div>
-          ))}
-        </motion.div>
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-hilop-green" />
+          </div>
+        ) : products.length > 0 ? (
+          <motion.div
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.1 }}
+            viewport={{ once: true }}
+          >
+            {products.map((product, index) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <p className="text-center text-gray-500">No products available yet.</p>
+        )}
 
-        {/* CTA */}
         <motion.div
-          className="text-center mt-12"
+          className="mt-12 text-center"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <Link href="/products">
-            <Button size="lg" variant="outline">
-              View All Products
-            </Button>
-          </Link>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/products">View All Products</Link>
+          </Button>
         </motion.div>
       </div>
     </section>
