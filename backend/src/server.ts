@@ -11,7 +11,7 @@ const logger = createLogger('server');
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: { origin: [config.frontendUrl, config.mobileAppUrl], methods: ['GET', 'POST'] },
+  cors: { origin: config.corsOrigins, methods: ['GET', 'POST'] },
 });
 
 attachSocketHandlers(io);

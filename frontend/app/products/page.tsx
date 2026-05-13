@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Sliders, ArrowUpDown, Heart, Eye, Loader2 } from 'lucide-react'
+import { Sliders, ArrowUpDown, Heart, Eye, Loader2, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -22,7 +22,7 @@ function ProductCard({ product }: { product: Product }) {
       <Card className="overflow-hidden group">
         <div className="relative h-64 overflow-hidden bg-gray-100">
           <Image
-            src={product.images?.[0] || 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=1000'}
+            src={product.images?.[0] || '/images/watch-elegance.svg'}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -50,7 +50,7 @@ function ProductCard({ product }: { product: Product }) {
               size="icon"
               className="rounded-full bg-hilop-green hover:bg-hilop-green/90"
             >
-              <Link href={`/products/${product.slug}`}>
+              <Link href={`/products/${product.slug || product.id}`}>
                 <Eye className="w-5 h-5 text-white" />
               </Link>
             </Button>
@@ -62,14 +62,14 @@ function ProductCard({ product }: { product: Product }) {
           <div className="flex items-center gap-2 mb-3">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
-                <span
+                <Star
                   key={i}
-                  className={`text-sm ${
-                    i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'
+                  className={`h-4 w-4 ${
+                    i < Math.floor(product.rating || 0)
+                      ? 'fill-yellow-400 text-yellow-400'
+                      : 'fill-gray-200 text-gray-200'
                   }`}
-                >
-                  ★
-                </span>
+                />
               ))}
             </div>
             <span className="text-sm text-gray-500">({product.reviewCount || 0})</span>
@@ -85,7 +85,7 @@ function ProductCard({ product }: { product: Product }) {
             variant="outline"
             className="w-full hover:bg-hilop-green hover:text-white hover:border-hilop-green"
           >
-            <Link href={`/products/${product.slug}`}>
+            <Link href={`/products/${product.slug || product.id}`}>
               View Details
             </Link>
           </Button>
@@ -108,6 +108,12 @@ export default function ProductsPage() {
       try {
         const response = await productsService.getProducts({
           search: searchQuery,
+          sort:
+            sortBy === 'price-low'
+              ? 'price_asc'
+              : sortBy === 'price-high'
+                ? 'price_desc'
+                : 'newest',
         })
         setProducts(response.data || [])
       } catch (error) {
@@ -170,6 +176,7 @@ export default function ProductsPage() {
               <div className="flex items-center gap-2">
                 <ArrowUpDown className="w-4 h-4 text-gray-500" />
                 <select
+                  suppressHydrationWarning
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="bg-transparent border border-gray-300 rounded-md px-2 py-1 text-sm"

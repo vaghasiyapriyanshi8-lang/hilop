@@ -2,13 +2,13 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productService } from '@/services/productService';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Search,
+  Filter,
+  MoreVertical,
+  Edit,
+  Trash2,
   Eye,
   ChevronLeft,
   ChevronRight
@@ -98,83 +98,96 @@ export default function ProductsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {data?.products?.map((product: any) => (
-                <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden mr-4">
-                        <img 
-                          src={product.images?.[0] || 'https://via.placeholder.com/150'} 
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{product.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">SKU: {product.sku}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{product.category}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(product.price)}</p>
-                    {product.oldPrice && (
-                      <p className="text-xs text-gray-400 line-through">{formatCurrency(product.oldPrice)}</p>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex flex-col gap-1">
-                      <span className={cn(
-                        'text-sm font-medium',
-                        product.stock <= 5 ? 'text-red-600' : 'text-gray-700 dark:text-gray-300'
-                      )}>
-                        {product.stock} in stock
-                      </span>
-                      <div className="w-24 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div 
-                          className={cn(
-                            'h-full rounded-full',
-                            product.stock <= 5 ? 'bg-red-500' : 'bg-blue-500'
-                          )}
-                          style={{ width: `${Math.min((product.stock / 100) * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={cn(
-                      'px-2.5 py-0.5 rounded-full text-xs font-medium',
-                      product.status === 'active' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
-                    )}>
-                      {product.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      <Link 
-                        href={`/products/${product.id}`}
-                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Link>
-                      <Link 
-                        href={`/products/edit/${product.id}`}
-                        className="p-1 text-gray-400 hover:text-emerald-600 transition-colors"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Link>
-                      <button 
-                        onClick={() => handleDelete(product.id)}
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+              {isLoading && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-gray-500">Loading products...</td>
                 </tr>
-              ))}
+              )}
+              {!isLoading && (!data?.products || data.products.length === 0) && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-gray-500">No products found.</td>
+                </tr>
+              )}
+              {data?.products?.map((product: any) => {
+                const productId = product._id || product.id;
+                return (
+                  <tr key={productId} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden mr-4">
+                          <img
+                            src={product.images?.[0] || 'https://via.placeholder.com/150'}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{product.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">SKU: {product.sku}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">{product.category}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(product.price)}</p>
+                      {product.oldPrice && (
+                        <p className="text-xs text-gray-400 line-through">{formatCurrency(product.oldPrice)}</p>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col gap-1">
+                        <span className={cn(
+                          'text-sm font-medium',
+                          product.stock <= 5 ? 'text-red-600' : 'text-gray-700 dark:text-gray-300'
+                        )}>
+                          {product.stock} in stock
+                        </span>
+                        <div className="w-24 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                          <div
+                            className={cn(
+                              'h-full rounded-full',
+                              product.stock <= 5 ? 'bg-red-500' : 'bg-blue-500'
+                            )}
+                            style={{ width: `${Math.min((product.stock / 100) * 100, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={cn(
+                        'px-2.5 py-0.5 rounded-full text-xs font-medium',
+                        product.status === 'active' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
+                      )}>
+                        {product.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/products/${productId}`}
+                          className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Link>
+                        <Link
+                          href={`/products/edit/${productId}`}
+                          className="p-1 text-gray-400 hover:text-emerald-600 transition-colors"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(productId)}
+                          className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

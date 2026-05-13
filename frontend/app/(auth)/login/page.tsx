@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
 type LoginFormData = z.infer<typeof loginSchema>
@@ -41,6 +41,11 @@ export default function LoginPage() {
       const result = await authService.login(data) as any
       const accessToken = result.accessToken || result.tokens?.accessToken
       const refreshToken = result.refreshToken || result.tokens?.refreshToken
+      const role = result.user?.role
+
+      if (role && role !== 'user') {
+        throw new Error('Please use the admin portal for admin accounts.')
+      }
 
       if (accessToken) localStorage.setItem('accessToken', accessToken)
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken)
@@ -50,11 +55,12 @@ export default function LoginPage() {
         title: 'Success',
         description: 'Logged in successfully!',
       })
-      router.push('/')
+      const nextPath = new URLSearchParams(window.location.search).get('next')
+      router.push(nextPath || '/')
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.response?.data?.message || 'Login failed',
+        description: error.response?.data?.message || error.message || 'Login failed',
         variant: 'destructive',
       })
     } finally {
@@ -143,7 +149,7 @@ export default function LoginPage() {
           {/* Sign Up Link */}
           <p className="text-center mt-6 text-gray-600">
              Don&apos;t have an account?{' '}
-            <Link href="/auth/signup" className="text-hilop-green font-semibold hover:underline">
+            <Link href="/signup" className="text-hilop-green font-semibold hover:underline">
               Sign up
             </Link>
           </p>

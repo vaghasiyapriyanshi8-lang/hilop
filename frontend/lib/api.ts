@@ -45,7 +45,7 @@ api.interceptors.response.use(
         // Refresh failed, redirect to login
         localStorage.removeItem('accessToken')
         localStorage.removeItem('refreshToken')
-        window.location.href = '/auth/login'
+        window.location.href = '/login'
       }
     }
 

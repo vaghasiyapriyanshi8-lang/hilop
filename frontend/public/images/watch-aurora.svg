@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="Aurora Moonlight watch">
+  <rect width="640" height="640" fill="#0f1826"/>
+  <path d="M84 432c115-104 242-131 382-82 41 14 75 19 102 14" fill="none" stroke="#22c55e" stroke-opacity=".5" stroke-width="28"/>
+  <g transform="translate(320 320) rotate(-10)">
+    <rect x="-54" y="-258" width="108" height="168" rx="30" fill="#111820"/>
+    <rect x="-54" y="90" width="108" height="168" rx="30" fill="#111820"/>
+    <circle r="158" fill="#eef7ff"/>
+    <circle r="132" fill="#101622"/>
+    <circle r="103" fill="#17263d"/>
+    <path d="M0 0v-76M0 0l48 62" stroke="#eef7ff" stroke-width="8" stroke-linecap="round"/>
+    <circle r="7" fill="#22c55e"/>
+  </g>
+</svg>

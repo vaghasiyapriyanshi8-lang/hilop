@@ -3,36 +3,40 @@
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import Image from 'next/image'
+import { ArrowRight, ShieldCheck, Sparkles, Watch } from 'lucide-react'
 
 export function Hero() {
   return (
-    <section className="relative h-[600px] md:h-[700px] overflow-hidden bg-black">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-hilop-green/20 to-transparent" />
+    <section className="relative min-h-[640px] overflow-hidden bg-black sm:min-h-[700px]">
+      <Image
+        src="/images/watch-hero.svg"
+        alt="Luxury Hilop watch"
+        fill
+        priority
+        className="object-cover opacity-80"
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.88),rgba(0,0,0,.58),rgba(0,0,0,.2))]" />
 
-      {/* Content */}
-      <div className="relative h-full flex items-center justify-center">
+      <div className="relative mx-auto flex min-h-[640px] max-w-7xl items-center px-4 py-20 sm:min-h-[700px] sm:px-6 lg:px-8">
         <motion.div
-          className="text-center px-4"
+          className="max-w-2xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          {/* Badge */}
           <motion.div
-            className="inline-block mb-6"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="px-4 py-2 bg-hilop-green/10 border border-hilop-green/20 rounded-full">
-              <span className="text-hilop-green text-sm font-semibold">NEW COLLECTION 2024</span>
-            </div>
+            <Sparkles className="h-4 w-4 text-hilop-green" />
+            <span className="text-sm font-semibold text-white">NEW COLLECTION 2026</span>
           </motion.div>
 
-          {/* Main Heading */}
           <motion.h1
-            className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
+            className="mb-6 max-w-xl text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -42,48 +46,56 @@ export function Hero() {
             <span className="text-hilop-green">Elegance</span>
           </motion.h1>
 
-          {/* Subheading */}
           <motion.p
-            className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto"
+            className="mb-8 max-w-xl text-base leading-7 text-gray-200 sm:text-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            Discover luxury watches that blend modern design with timeless craftsmanship. Every timepiece tells a story of excellence.
+            Discover luxury watches that blend modern design with timeless craftsmanship.
+            Every timepiece tells a story of excellence.
           </motion.p>
 
-          {/* CTAs */}
           <motion.div
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col gap-3 sm:flex-row"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
             <Link href="/products">
-              <Button size="lg" className="bg-hilop-green hover:bg-hilop-green/90 text-black">
+              <Button size="lg" className="w-full gap-2 bg-hilop-green text-black hover:bg-hilop-green/90 sm:w-auto">
                 Explore Collection
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link href="#featured">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="lg" variant="outline" className="w-full border-white/70 bg-white/5 text-white hover:bg-white/10 sm:w-auto">
                 Watch Features
               </Button>
             </Link>
           </motion.div>
+
+          <motion.div
+            className="mt-10 grid max-w-xl grid-cols-1 gap-3 text-sm text-white/85 sm:grid-cols-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.65 }}
+          >
+            <div className="flex items-center gap-2">
+              <Watch className="h-4 w-4 text-hilop-green" />
+              Premium builds
+            </div>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-hilop-green" />
+              2-year warranty
+            </div>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-hilop-green" />
+              Gift ready
+            </div>
+          </motion.div>
         </motion.div>
       </div>
-
-      {/* Floating Elements */}
-      <motion.div
-        className="absolute top-20 right-10 w-32 h-32 bg-hilop-green/10 rounded-full blur-3xl"
-        animate={{ y: [0, 20, 0] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute bottom-20 left-10 w-32 h-32 bg-hilop-green/10 rounded-full blur-3xl"
-        animate={{ y: [0, -20, 0] }}
-        transition={{ duration: 4, repeat: Infinity }}
-      />
     </section>
   )
 }

@@ -2,13 +2,11 @@
 
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { toggleSidebar, toggleTheme } from '@/redux/slices/uiSlice';
+import { toggleSidebar } from '@/redux/slices/uiSlice';
 import { logout } from '@/redux/slices/authSlice';
+import Link from 'next/link';
 import { 
   Menu, 
-  Bell, 
-  Moon, 
-  Sun, 
   Search, 
   User, 
   LogOut, 
@@ -19,7 +17,7 @@ import { cn } from '@/utils/cn';
 
 export default function Navbar() {
   const dispatch = useDispatch();
-  const { theme } = useSelector((state: RootState) => state.ui);
+  const { theme, accentColor } = useSelector((state: RootState) => state.ui);
   const { user } = useSelector((state: RootState) => state.auth);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -33,35 +31,25 @@ export default function Navbar() {
           <Menu className="w-6 h-6" />
         </button>
 
-        <div className="hidden md:flex items-center ml-4 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-1.5 border border-transparent focus-within:border-blue-500 transition-colors">
+        <div className="hidden md:flex items-center ml-4 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-1.5 border border-transparent focus-within:border-blue-500 transition-colors" style={{ borderColor: 'transparent' }}>
           <Search className="w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search..."
             className="ml-2 bg-transparent border-none outline-none text-sm w-64 text-gray-700 dark:text-gray-200"
+            onFocus={(e) => (e.target.parentElement!.style.borderColor = accentColor)}
+            onBlur={(e) => (e.target.parentElement!.style.borderColor = 'transparent')}
           />
         </div>
       </div>
 
       <div className="flex items-center space-x-2 md:space-x-4">
-        <button
-          onClick={() => dispatch(toggleTheme())}
-          className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-        >
-          {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-        </button>
-
-        <button className="relative p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-900"></span>
-        </button>
-
         <div className="relative">
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="flex items-center space-x-3 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: accentColor }}>
               {user?.name?.charAt(0) || 'A'}
             </div>
             <div className="hidden md:block text-left">
@@ -76,14 +64,22 @@ export default function Navbar() {
                 <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.name || 'Admin'}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email || 'admin@hilop.com'}</p>
               </div>
-              <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <Link 
+                href="/profile"
+                onClick={() => setShowProfileMenu(false)}
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
                 <User className="w-4 h-4 mr-2" />
                 Profile
-              </button>
-              <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              </Link>
+              <Link 
+                href="/settings"
+                onClick={() => setShowProfileMenu(false)}
+                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
-              </button>
+              </Link>
               <div className="border-t border-gray-100 dark:border-gray-800 my-1"></div>
               <button
                 onClick={() => dispatch(logout())}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="Elegance Pro watch">
+  <rect width="640" height="640" fill="#edf7f0"/>
+  <circle cx="320" cy="320" r="250" fill="#d9f4e3"/>
+  <g transform="translate(320 320)">
+    <rect x="-52" y="-260" width="104" height="170" rx="30" fill="#17231d"/>
+    <rect x="-52" y="90" width="104" height="170" rx="30" fill="#17231d"/>
+    <circle r="158" fill="#f8fff9"/>
+    <circle r="132" fill="#101713"/>
+    <circle r="104" fill="#183d2a"/>
+    <path d="M0 0v-70M0 0l58 37" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+    <circle r="7" fill="#22c55e"/>
+  </g>
+</svg>

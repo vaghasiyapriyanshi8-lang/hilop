@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface UIState {
   sidebarOpen: boolean;
   theme: 'light' | 'dark';
+  accentColor: string;
 }
 
 const initialState: UIState = {
   sidebarOpen: true,
   theme: (typeof window !== 'undefined' ? (localStorage.getItem('theme') as 'light' | 'dark') : 'light') || 'light',
+  accentColor: (typeof window !== 'undefined' ? localStorage.getItem('accentColor') : '#3b82f6') || '#3b82f6',
 };
 
 const uiSlice = createSlice({
@@ -42,8 +44,15 @@ const uiSlice = createSlice({
         }
       }
     },
+    setAccentColor: (state, action: PayloadAction<string>) => {
+      state.accentColor = action.payload;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('accentColor', action.payload);
+        document.documentElement.style.setProperty('--color-primary', action.payload);
+      }
+    },
   },
 });
 
-export const { toggleSidebar, setSidebarOpen, toggleTheme, setTheme } = uiSlice.actions;
+export const { toggleSidebar, setSidebarOpen, toggleTheme, setTheme, setAccentColor } = uiSlice.actions;
 export default uiSlice.reducer;

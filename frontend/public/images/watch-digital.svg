@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="Digital luxury watch">
+  <rect width="640" height="640" fill="#eef2f8"/>
+  <circle cx="320" cy="320" r="240" fill="#dfe7f2"/>
+  <g transform="translate(320 320)">
+    <rect x="-70" y="-255" width="140" height="166" rx="28" fill="#121822"/>
+    <rect x="-70" y="89" width="140" height="166" rx="28" fill="#121822"/>
+    <rect x="-160" y="-160" width="320" height="320" rx="78" fill="#252f3f"/>
+    <rect x="-128" y="-128" width="256" height="256" rx="50" fill="#0b111a"/>
+    <rect x="-84" y="-36" width="168" height="72" rx="14" fill="#22c55e"/>
+    <text x="0" y="14" text-anchor="middle" font-family="Arial, sans-serif" font-size="46" font-weight="700" fill="#07100c">10:24</text>
+  </g>
+</svg>

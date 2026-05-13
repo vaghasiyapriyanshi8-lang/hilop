@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="Midnight Glow watch">
+  <rect width="640" height="640" fill="#f4fbf6"/>
+  <circle cx="320" cy="320" r="246" fill="#c7f5d6"/>
+  <g transform="translate(320 320) rotate(11)">
+    <rect x="-58" y="-258" width="116" height="168" rx="32" fill="#112018"/>
+    <rect x="-58" y="90" width="116" height="168" rx="32" fill="#112018"/>
+    <circle r="158" fill="#1b1f1c"/>
+    <circle r="132" fill="#07110c"/>
+    <circle r="104" fill="#11351f"/>
+    <path d="M0 0v-74M0 0l-42 68" stroke="#effff4" stroke-width="8" stroke-linecap="round"/>
+    <circle r="7" fill="#22c55e"/>
+  </g>
+</svg>

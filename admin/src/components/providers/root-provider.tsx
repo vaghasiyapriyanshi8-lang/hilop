@@ -27,6 +27,10 @@ export default function RootProvider({ children }: { children: React.ReactNode }
     } else {
       document.documentElement.classList.remove('dark');
     }
+
+    // Initialize accent color
+    const accentColor = localStorage.getItem('accentColor') || '#3b82f6';
+    document.documentElement.style.setProperty('--color-primary', accentColor);
   }, []);
 
   if (!mounted) {

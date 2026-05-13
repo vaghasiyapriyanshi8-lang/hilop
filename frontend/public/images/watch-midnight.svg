@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="Midnight Urban watch">
+  <rect width="640" height="640" fill="#111111"/>
+  <circle cx="320" cy="320" r="244" fill="#232323"/>
+  <g transform="translate(320 320) rotate(6)">
+    <rect x="-60" y="-260" width="120" height="170" rx="32" fill="#090909"/>
+    <rect x="-60" y="90" width="120" height="170" rx="32" fill="#090909"/>
+    <circle r="160" fill="#4b5563"/>
+    <circle r="133" fill="#090909"/>
+    <circle r="104" fill="#161616"/>
+    <path d="M0 0v-76M0 0l-62 40" stroke="#e5e7eb" stroke-width="8" stroke-linecap="round"/>
+    <circle r="7" fill="#22c55e"/>
+  </g>
+</svg>

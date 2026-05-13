@@ -1,10 +1,13 @@
 export interface Product {
   id: string
+  _id?: string
   name: string
   slug: string
   description: string
   price: number
   originalPrice?: number
+  oldPrice?: number
+  salePrice?: number
   images: string[]
   category: string
   brand: string
@@ -12,9 +15,16 @@ export interface Product {
   specifications: Record<string, string>
   rating: number
   reviewCount: number
+  reviewsCount?: number
   inStock: boolean
   stockQuantity: number
+  stock?: number
+  inventory?: number
   tags: string[]
+  features?: string[]
+  specs?: Record<string, string>
+  status?: string
+  isFeatured?: boolean
   createdAt: string
   updatedAt: string
 }

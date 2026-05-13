@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="Urban Classic watch">
+  <rect width="640" height="640" fill="#f4f2ed"/>
+  <path d="M60 486c108-82 219-106 333-73 72 21 135 12 189-27" fill="none" stroke="#22c55e" stroke-opacity=".34" stroke-width="30"/>
+  <g transform="translate(320 320) rotate(8)">
+    <rect x="-58" y="-258" width="116" height="168" rx="32" fill="#2c2925"/>
+    <rect x="-58" y="90" width="116" height="168" rx="32" fill="#2c2925"/>
+    <circle r="158" fill="#d9c79d"/>
+    <circle r="132" fill="#191714"/>
+    <circle r="103" fill="#302a22"/>
+    <path d="M0 0v-74M0 0l-55 44" stroke="#f8ead0" stroke-width="8" stroke-linecap="round"/>
+    <circle r="7" fill="#d9c79d"/>
+  </g>
+</svg>

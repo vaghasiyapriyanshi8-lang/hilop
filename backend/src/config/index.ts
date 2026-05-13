@@ -40,6 +40,14 @@ export const config = {
   stripeSecretKey: process.env.STRIPE_SECRET_KEY as string,
   razorpayKeyId: process.env.RAZORPAY_KEY_ID as string,
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET as string,
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3001',
   mobileAppUrl: process.env.MOBILE_APP_URL || 'http://localhost:8081',
+  corsOrigins: [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    process.env.MOBILE_APP_URL || 'http://localhost:8081',
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3010',
+    'http://localhost:3020',
+  ],
 };

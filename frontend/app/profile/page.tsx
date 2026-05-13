@@ -33,7 +33,7 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center">
         <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <p className="text-gray-600 mb-4">Please log in to view your profile</p>
-          <Link href="/auth/login">
+          <Link href="/login">
             <Button className="bg-hilop-green hover:bg-hilop-green/90">Sign In</Button>
           </Link>
         </motion.div>
