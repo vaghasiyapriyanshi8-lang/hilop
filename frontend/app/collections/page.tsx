@@ -91,7 +91,7 @@ export default function CollectionsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Link href={`/products?category=${collection.slug}`}>
+                <Link href={`/products?category=₹{collection.slug}`}>
                   <Card className="group relative h-[400px] overflow-hidden cursor-pointer border-0 shadow-xl">
                     <Image
                       src={COLLECTION_IMAGES[collection.slug] || COLLECTION_IMAGES.default}

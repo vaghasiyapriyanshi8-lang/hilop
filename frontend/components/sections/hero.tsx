@@ -68,7 +68,7 @@ export function Hero() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link href="#featured">
+            <Link href="/features">
               <Button size="lg" variant="outline" className="w-full border-white/70 bg-white/5 text-white hover:bg-white/10 sm:w-auto">
                 Watch Features
               </Button>

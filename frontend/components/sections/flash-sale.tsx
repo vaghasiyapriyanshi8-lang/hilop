@@ -111,8 +111,8 @@ export function FlashSale() {
                   <h3 className="mb-3 line-clamp-2 text-lg font-semibold">{sale.name}</h3>
 
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="text-2xl font-bold text-red-600">${sale.price}</span>
-                    <span className="text-sm text-gray-400 line-through">${sale.originalPrice}</span>
+                    <span className="text-2xl font-bold text-red-600">₹{sale.price}</span>
+                    <span className="text-sm text-gray-400 line-through">₹{sale.originalPrice}</span>
                   </div>
 
                   <div className="mb-4">
@@ -126,14 +126,14 @@ export function FlashSale() {
                       <motion.div
                         className="h-2 rounded-full bg-red-500"
                         initial={{ width: 0 }}
-                        whileInView={{ width: `${(sale.sold / sale.total) * 100}%` }}
+                        whileInView={{ width: `₹{(sale.sold / sale.total) * 100}%` }}
                         transition={{ delay: 0.5 }}
                         viewport={{ once: true }}
                       />
                     </div>
                   </div>
 
-                  <Link href={`/products/${sale.id}`} className="w-full">
+                  <Link href={`/products/₹{sale.id}`} className="w-full">
                     <Button className="w-full bg-red-600 text-white hover:bg-red-700">
                       Grab Now
                     </Button>

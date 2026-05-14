@@ -35,7 +35,7 @@ export default function DashboardPage() {
     queryKey: ['dashboard-overview'],
     queryFn: async () => {
       const response = await apiClient.get('/analytics/overview');
-      return response.data;
+      return response.data.data; // { revenue, orders, activeUsers, totalProducts, conversionRate, revenueData, categorySales }
     },
   });
 
@@ -43,12 +43,12 @@ export default function DashboardPage() {
   const { data: ordersResponse, isLoading: ordersLoading } = useQuery({
     queryKey: ['recent-orders'],
     queryFn: async () => {
-      const response = await apiClient.get('/orders');
+      const response = await apiClient.get('/orders/admin/recent');
       return response.data;
     },
   });
 
-  const recentOrders = ordersResponse?.data?.slice(0, 5) || [];
+  const recentOrders = ordersResponse?.data || [];
   const revenueData = summary?.revenueData || [];
   const categorySales = summary?.categorySales || [];
 
@@ -60,14 +60,14 @@ export default function DashboardPage() {
       color: 'blue',
     },
     {
-      name: 'Active Users',
+      name: 'Total Users',
       value: summary?.activeUsers ?? null,
       icon: Users,
       color: 'purple',
     },
     {
-      name: 'Conversion Rate',
-      value: summary?.conversionRate ?? null,
+      name: 'Total Products',
+      value: summary?.totalProducts ?? null,
       icon: Package,
       color: 'emerald',
     },
@@ -103,7 +103,7 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-500 dark:text-gray-400">{stat.name}</p>
               <h3 className="text-2xl font-bold mt-1 text-gray-900 dark:text-white">
                 {stat.value !== null ? (
-                  stat.name.includes('Revenue') ? formatCurrency(stat.value) : stat.value.toLocaleString()
+                  stat.name === 'Total Revenue' ? formatCurrency(stat.value) : stat.value.toLocaleString()
                 ) : (
                   <span className="text-gray-400 dark:text-gray-500">Loading...</span>
                 )}
@@ -150,7 +150,7 @@ export default function DashboardPage() {
                     axisLine={false} 
                     tickLine={false} 
                     tick={{ fontSize: 12, fill: '#6b7280' }}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `₹₹{value}`}
                   />
                   <Tooltip 
                     contentStyle={{ 
@@ -211,7 +211,7 @@ export default function DashboardPage() {
                   />
                   <Bar dataKey="sales" radius={[4, 4, 0, 0]}>
                     {categorySales.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'][index % 4]} />
+                      <Cell key={`cell-₹{index}`} fill={['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'][index % 4]} />
                     ))}
                   </Bar>
                 </BarChart>

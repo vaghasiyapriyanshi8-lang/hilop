@@ -11,6 +11,7 @@ import { Colors, Typography, Spacing } from '../../theme';
 import { apiClient } from '../../services/api/client';
 import { ENDPOINTS } from '../../constants/api';
 import { Order } from '../../types';
+import { formatCurrency } from '../../utils/format';
 
 type Props = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'OrderHistory'>;
@@ -71,7 +72,7 @@ function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
       <View style={cardStyles.footer}>
         <View>
           <Text style={cardStyles.totalLabel}>Order Total</Text>
-          <Text style={cardStyles.totalValue}>₹{order.totalPrice.toLocaleString()}</Text>
+          <Text style={cardStyles.totalValue}>{formatCurrency(order.totalPrice)}</Text>
         </View>
         <View style={cardStyles.arrowBox}>
           <Text style={cardStyles.arrow}>→</Text>

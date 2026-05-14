@@ -9,11 +9,12 @@ import { Eye, Heart, Loader2, Star } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { productsService } from '@/services/api/products'
 import { Product } from '@/types'
+import { formatPrice } from '@/utils/format'
 
 function ProductCard({ product }: { product: Product }) {
   const [isWishlisted, setIsWishlisted] = useState(false)
   const image = product.images?.[0] || '/images/watch-aurora.svg'
-  const productHref = `/products/${product.slug || product.id}`
+  const productHref = `/products/₹{product.slug || product.id}`
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
@@ -47,7 +48,7 @@ function ProductCard({ product }: { product: Product }) {
               onClick={() => setIsWishlisted(!isWishlisted)}
               aria-label="Toggle wishlist"
             >
-              <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
+              <Heart className={`h-5 w-5 ₹{isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
             </Button>
             <Button asChild size="icon" className="rounded-full bg-hilop-green hover:bg-hilop-green/90" aria-label="View product">
               <Link href={productHref}>
@@ -65,7 +66,7 @@ function ProductCard({ product }: { product: Product }) {
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-4 w-4 ${
+                  className={`h-4 w-4 ₹{
                     i < Math.floor(product.rating || 0)
                       ? 'fill-yellow-400 text-yellow-400'
                       : 'fill-gray-200 text-gray-200'
@@ -77,10 +78,10 @@ function ProductCard({ product }: { product: Product }) {
           </div>
 
           <div className="mb-4 flex items-center gap-2">
-            <span className="text-xl font-bold text-hilop-green">${product.price.toLocaleString()}</span>
+            <span className="text-xl font-bold text-hilop-green">{formatPrice(product.price)}</span>
             {product.originalPrice && (
               <span className="text-sm text-gray-400 line-through">
-                ${product.originalPrice.toLocaleString()}
+                {formatPrice(product.originalPrice)}
               </span>
             )}
           </div>

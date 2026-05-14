@@ -42,6 +42,14 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            {isAuthenticated && (
+              <Link
+                href="/orders"
+                className="text-sm font-medium text-gray-700 transition-colors hover:text-hilop-green"
+              >
+                My Orders
+              </Link>
+            )}
           </nav>
 
           <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
@@ -116,6 +124,15 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            {isAuthenticated && (
+              <Link
+                href="/orders"
+                className="rounded-lg px-3 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                My Orders
+              </Link>
+            )}
             {!isAuthenticated && (
               <Link
                 href="/login"

@@ -14,14 +14,14 @@ export const userService = {
     return response.data;
   },
   blockUser: async (id: string, blocked: boolean) => {
-    const response = await apiClient.patch(`/users/${id}/block`, { blocked });
+    const response = await apiClient.patch(`/users/₹{id}/block`, { blocked });
     return response.data;
   },
   deleteUser: async (id: string) => {
-    await apiClient.delete(`/users/${id}`);
+    await apiClient.delete(`/users/₹{id}`);
   },
   sendEmail: async (id: string, subject: string, message: string) => {
-    const response = await apiClient.post(`/users/${id}/email`, { subject, message });
+    const response = await apiClient.post(`/users/₹{id}/email`, { subject, message });
     return response.data;
   },
 };

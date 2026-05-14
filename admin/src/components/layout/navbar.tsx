@@ -7,7 +7,6 @@ import { logout } from '@/redux/slices/authSlice';
 import Link from 'next/link';
 import { 
   Menu, 
-  Search, 
   User, 
   LogOut, 
   Settings 
@@ -30,17 +29,6 @@ export default function Navbar() {
         >
           <Menu className="w-6 h-6" />
         </button>
-
-        <div className="hidden md:flex items-center ml-4 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-1.5 border border-transparent focus-within:border-blue-500 transition-colors" style={{ borderColor: 'transparent' }}>
-          <Search className="w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="ml-2 bg-transparent border-none outline-none text-sm w-64 text-gray-700 dark:text-gray-200"
-            onFocus={(e) => (e.target.parentElement!.style.borderColor = accentColor)}
-            onBlur={(e) => (e.target.parentElement!.style.borderColor = 'transparent')}
-          />
-        </div>
       </div>
 
       <div className="flex items-center space-x-2 md:space-x-4">

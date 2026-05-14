@@ -81,7 +81,7 @@ export default function ProfilePage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 font-semibold border-b-2 transition-colors ${
+                className={`flex items-center gap-2 px-4 py-3 font-semibold border-b-2 transition-colors ₹{
                   activeTab === tab.id
                     ? 'border-hilop-green text-hilop-green'
                     : 'border-transparent text-gray-600 hover:text-gray-800'

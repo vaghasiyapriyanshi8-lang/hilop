@@ -88,7 +88,7 @@ export const productsService = {
   },
 
   async getProduct(slug: string): Promise<Product> {
-    const response = await api.get(`/products/${slug}`)
+    const response = await api.get(`/products/₹{slug}`)
     return normalizeProduct(response.data.data)
   },
 

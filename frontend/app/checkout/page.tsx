@@ -13,6 +13,7 @@ import { Check } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
+import { formatPrice } from '@/utils/format'
 
 const checkoutSchema = z.object({
   firstName: z.string().min(2, 'First name required'),
@@ -97,7 +98,7 @@ export default function CheckoutPage() {
               <div key={step.id}>
                 <div className="flex items-center">
                   <motion.div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ₹{
                       step.id <= currentStep
                         ? 'bg-hilop-green text-black'
                         : 'bg-gray-200 text-gray-600'
@@ -108,7 +109,7 @@ export default function CheckoutPage() {
                   </motion.div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`h-1 w-24 mx-4 ${
+                      className={`h-1 w-24 mx-4 ₹{
                         step.id < currentStep ? 'bg-hilop-green' : 'bg-gray-200'
                       }`}
                     />
@@ -282,7 +283,7 @@ export default function CheckoutPage() {
                 {items.map((item) => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <span>{item.name} x {item.quantity}</span>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                    <span>{formatPrice(item.price * item.quantity)}</span>
                   </div>
                 ))}
               </div>
@@ -291,7 +292,7 @@ export default function CheckoutPage() {
               <div className="space-y-2 mb-6">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>₹{total.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Shipping</span>
@@ -299,11 +300,11 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax</span>
-                  <span>${(total * 0.1).toFixed(2)}</span>
+                  <span>₹{(total * 0.1).toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-2 flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span className="text-hilop-green">${(total * 1.1).toFixed(2)}</span>
+                  <span className="text-hilop-green">₹{(total * 1.1).toFixed(2)}</span>
                 </div>
               </div>
 

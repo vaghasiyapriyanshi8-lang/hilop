@@ -1,7 +1,7 @@
 import React from 'react';
 
 const metrics = [
-  { label: 'Revenue', value: '$1.4M', change: '+12%' },
+  { label: 'Revenue', value: '₹1.4M', change: '+12%' },
   { label: 'Orders', value: '6.2k', change: '+9%' },
   { label: 'Customers', value: '2.9k', change: '+18%' },
   { label: 'Conversion', value: '7.4%', change: '+1.4%' },

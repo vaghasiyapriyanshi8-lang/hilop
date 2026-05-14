@@ -3,11 +3,8 @@ import {
   Package,
   ShoppingCart,
   Users,
-  Image,
-  Tag,
-  Bell,
+  CreditCard,
   Settings,
-  ShieldCheck,
 } from 'lucide-react';
 
 export const NAVIGATION_ITEMS = [
@@ -30,6 +27,11 @@ export const NAVIGATION_ITEMS = [
     name: 'Orders',
     href: '/orders',
     icon: ShoppingCart,
+  },
+  {
+    name: 'Payments',
+    href: '/payments',
+    icon: CreditCard,
   },
   {
     name: 'Users',

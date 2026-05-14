@@ -55,7 +55,7 @@ export const useCartStore = create<CartState>()(
             ...items,
             {
               ...item,
-              id: `${item.productId}-${Date.now()}-${Math.random()}`,
+              id: `₹{item.productId}-₹{Date.now()}-₹{Math.random()}`,
             },
           ]
         }

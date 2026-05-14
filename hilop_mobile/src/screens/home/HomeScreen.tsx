@@ -13,6 +13,7 @@ import { apiClient } from '../../services/api/client';
 import { ENDPOINTS } from '../../constants/api';
 import { Product, Category } from '../../types';
 import { useAuthStore } from '../../store/slices/authStore';
+import { formatCurrency } from '../../utils/format';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.6;
@@ -88,11 +89,11 @@ function ProductCard({
         <Text style={cardStyles.name} numberOfLines={2}>{product.name}</Text>
         <View style={cardStyles.priceRow}>
           <Text style={cardStyles.price}>
-            ₹{(product.discountPrice ?? product.price).toLocaleString()}
+            {formatCurrency(product.discountPrice ?? product.price)}
           </Text>
           {product.discountPrice && (
             <Text style={cardStyles.originalPrice}>
-              ₹{product.price.toLocaleString()}
+              {formatCurrency(product.price)}
             </Text>
           )}
         </View>

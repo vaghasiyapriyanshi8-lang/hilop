@@ -9,17 +9,17 @@ export const ENDPOINTS = {
   VERIFY_OTP: '/auth/verify-otp',
   // Products
   PRODUCTS: '/products',
-  PRODUCT_DETAIL: (id: string) => `/products/${id}`,
+  PRODUCT_DETAIL: (id: string) => `/products/₹{id}`,
   FEATURED: '/products/featured',
   NEW_ARRIVALS: '/products/new-arrivals',
   CATEGORIES: '/categories',
   // Cart
   CART: '/cart',
   ADD_TO_CART: '/cart/add',
-  REMOVE_FROM_CART: (id: string) => `/cart/remove/${id}`,
+  REMOVE_FROM_CART: (id: string) => `/cart/remove/₹{id}`,
   // Orders
   ORDERS: '/orders',
-  ORDER_DETAIL: (id: string) => `/orders/${id}`,
+  ORDER_DETAIL: (id: string) => `/orders/₹{id}`,
   // Wishlist
   WISHLIST: '/wishlist',
   // User

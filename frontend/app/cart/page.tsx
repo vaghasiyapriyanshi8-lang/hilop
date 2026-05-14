@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useCartStore } from '@/store/cart'
 import { ShoppingBag, Trash2, Plus, Minus } from 'lucide-react'
+import { formatPrice } from '@/utils/format'
 
 export default function CartPage() {
   const { items, total, removeItem, updateQuantity, clearCart } = useCartStore()
@@ -76,7 +77,7 @@ export default function CartPage() {
                     {/* Details */}
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg">{item.name}</h3>
-                      <p className="text-gray-600 text-sm">${item.price}</p>
+                      <p className="text-gray-600 text-sm">{formatPrice(item.price)}</p>
                       {item.variant && (
                         <div className="mt-2 flex gap-4 text-xs">
                           {item.variant.size && <span>{item.variant.size}</span>}
@@ -107,7 +108,7 @@ export default function CartPage() {
                     {/* Price */}
                     <div className="text-right">
                       <p className="font-bold text-lg text-hilop-green">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatPrice(item.price * item.quantity)}
                       </p>
                       <Button
                         size="sm"
@@ -146,7 +147,7 @@ export default function CartPage() {
               <div className="space-y-4 mb-6 pb-6 border-b">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>₹{total.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
@@ -154,7 +155,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Tax</span>
-                  <span>${(total * 0.1).toFixed(2)}</span>
+                  <span>₹{(total * 0.1).toFixed(2)}</span>
                 </div>
               </div>
 
@@ -162,7 +163,7 @@ export default function CartPage() {
               <div className="flex justify-between items-center mb-6">
                 <span className="text-xl font-bold">Total</span>
                 <span className="text-3xl font-bold text-hilop-green">
-                  ${(total * 1.1).toFixed(2)}
+                  ₹{(total * 1.1).toFixed(2)}
                 </span>
               </div>
 

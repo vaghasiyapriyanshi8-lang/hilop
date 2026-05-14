@@ -57,8 +57,16 @@ export default function EditProductPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
-      const res = await apiClient.get(`/products/admin/by-id/${id}`);
+      const res = await apiClient.get(`/products/admin/by-id/₹{id}`);
       return res.data?.data;
+    },
+  });
+
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const res = await apiClient.get('/products/categories/all');
+      return res.data?.data ?? [];
     },
   });
 
@@ -113,11 +121,11 @@ export default function EditProductPage() {
         });
         existingImages.forEach((url) => fd.append('existingImages', url));
         newImages.forEach((img) => fd.append('images', img));
-        return apiClient.patch(`/products/${id}`, fd, {
+        return apiClient.patch(`/products/₹{id}`, fd, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       }
-      return apiClient.patch(`/products/${id}`, {
+      return apiClient.patch(`/products/₹{id}`, {
         ...formData,
         variants: formData.variants ?? [],
         existingImages,
@@ -256,12 +264,12 @@ export default function EditProductPage() {
                 >
                   <div className="flex-1 space-y-3">
                     <input
-                      {...register(`variants.${index}.name`)}
+                      {...register(`variants.₹{index}.name`)}
                       placeholder="Variant Name (e.g. Size, Color)"
                       className="w-full px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                     <input
-                      {...register(`variants.${index}.options`)}
+                      {...register(`variants.₹{index}.options`)}
                       placeholder="Options (comma separated: S, M, L)"
                       className="w-full px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                     />
@@ -332,7 +340,7 @@ export default function EditProductPage() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Base Price ($)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Base Price (₹)</label>
                 <input
                   {...register('price', { valueAsNumber: true })}
                   type="number"
@@ -344,7 +352,7 @@ export default function EditProductPage() {
                 {errors.price && <p className="mt-1 text-xs text-red-500">{errors.price.message}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Compare Price ($)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Compare Price (₹)</label>
                 <input
                   {...register('oldPrice', { valueAsNumber: true })}
                   type="number"
@@ -370,10 +378,9 @@ export default function EditProductPage() {
                   )}
                 >
                   <option value="">Select Category</option>
-                  <option value="dress-watches">Dress Watches</option>
-                  <option value="luxury-collection">Luxury Collection</option>
-                  <option value="smart-watches">Smart Watches</option>
-                  <option value="digital-watches">Digital Watches</option>
+                  {(categoriesData ?? []).map((cat: any) => (
+                    <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                  ))}
                 </select>
                 {errors.category && <p className="mt-1 text-xs text-red-500">{errors.category.message}</p>}
               </div>

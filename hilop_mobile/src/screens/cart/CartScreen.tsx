@@ -10,6 +10,7 @@ import { Colors, Typography, Spacing } from '../../theme';
 import { useCartStore } from '../../store/slices/cartStore';
 import { CartItem } from '../../types';
 import { apiClient } from '../../services/api/client';
+import { formatCurrency } from '../../utils/format';
 
 type Props = {
   navigation: NativeStackNavigationProp<CartStackParamList, 'CartScreen'>;
@@ -64,7 +65,7 @@ function CartItemRow({
           </Text>
         )}
         <Text style={itemStyles.price}>
-          ₹{(price * item.quantity).toLocaleString()}
+          {formatCurrency(price * item.quantity)}
         </Text>
 
         {/* Qty Controls */}
@@ -113,7 +114,7 @@ function CouponInput({
       {discount > 0 ? (
         <View style={couponStyles.appliedRow}>
           <Text style={couponStyles.appliedText}>
-            🎉 "{coupon}" applied — ₹{discount.toLocaleString()} off
+            🎉 "{coupon}" applied — {formatCurrency(discount)} off
           </Text>
           <TouchableOpacity onPress={onRemove}>
             <Text style={couponStyles.removeText}>Remove</Text>
@@ -178,7 +179,7 @@ function PriceSummary({
               <Text style={summaryStyles.freeText}>FREE</Text>
             ) : (
               <Text style={[summaryStyles.value, { color: row.color }]}>
-                {row.value < 0 ? '-' : ''}₹{Math.abs(row.value).toLocaleString()}
+                {row.value < 0 ? '-' : ''}{formatCurrency(Math.abs(row.value))}
               </Text>
             )}
           </View>
@@ -189,7 +190,7 @@ function PriceSummary({
 
       <View style={summaryStyles.row}>
         <Text style={summaryStyles.totalLabel}>Total</Text>
-        <Text style={summaryStyles.totalValue}>₹{total.toLocaleString()}</Text>
+        <Text style={summaryStyles.totalValue}>{formatCurrency(total)}</Text>
       </View>
 
       {shipping === 0 && (
@@ -238,7 +239,7 @@ export default function CartScreen({ navigation }: Props) {
         cartTotal: subtotal,
       });
       setCouponDiscount(data.discount);
-      Alert.alert('Success', `Coupon applied! You saved ₹${data.discount}`);
+      Alert.alert('Success', `Coupon applied! You saved ₹{formatCurrency(data.discount)}`);
     } catch (error: any) {
       Alert.alert('Invalid Coupon', error.response?.data?.message ?? 'Coupon not valid');
     } finally {
@@ -310,7 +311,7 @@ export default function CartScreen({ navigation }: Props) {
             onRemove={() => {
               Alert.alert(
                 'Remove Item',
-                `Remove ${item.product.name} from cart?`,
+                `Remove ₹{item.product.name} from cart?`,
                 [
                   { text: 'Cancel', style: 'cancel' },
                   {
@@ -349,7 +350,7 @@ export default function CartScreen({ navigation }: Props) {
       <View style={styles.bottomBar}>
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>₹{total.toLocaleString()}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(total)}</Text>
         </View>
         <TouchableOpacity
           style={styles.checkoutBtn}

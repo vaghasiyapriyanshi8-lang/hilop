@@ -45,6 +45,14 @@ export default function NewProductPage() {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
 
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const res = await apiClient.get('/products/categories/all');
+      return res.data?.data ?? [];
+    },
+  });
+
   const {
     register,
     handleSubmit,
@@ -227,12 +235,12 @@ export default function NewProductPage() {
                 <div key={field.id} className="flex gap-4 items-start p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
                   <div className="flex-1 space-y-3">
                     <input
-                      {...register(`variants.${index}.name`)}
+                      {...register(`variants.₹{index}.name`)}
                       placeholder="Variant Name (e.g. Size, Color)"
                       className="w-full px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                     <input
-                      {...register(`variants.${index}.options`)}
+                      {...register(`variants.₹{index}.options`)}
                       placeholder="Options (comma separated: S, M, L)"
                       className="w-full px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                     />
@@ -294,7 +302,7 @@ export default function NewProductPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Base Price ($)
+                  Base Price (₹)
                 </label>
                 <input
                   {...register('price', { valueAsNumber: true })}
@@ -309,7 +317,7 @@ export default function NewProductPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Compare Price ($)
+                  Compare Price (₹)
                 </label>
                 <input
                   {...register('oldPrice', { valueAsNumber: true })}
@@ -339,11 +347,12 @@ export default function NewProductPage() {
                     errors.category ? "border-red-500" : "border-gray-200 dark:border-gray-700"
                   )}
                 >
-                  <option value="">Select Category</option>
-                  <option value="dress-watches">Dress Watches</option>
-                  <option value="luxury-collection">Luxury Collection</option>
-                  <option value="smart-watches">Smart Watches</option>
-                  <option value="digital-watches">Digital Watches</option>
+                  <option value="">
+                    {categoriesData?.length === 0 ? 'No categories yet — add one first' : 'Select Category'}
+                  </option>
+                  {(categoriesData ?? []).map((cat: any) => (
+                    <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                  ))}
                 </select>
                 {errors.category && <p className="mt-1 text-xs text-red-500">{errors.category.message}</p>}
               </div>

@@ -10,7 +10,7 @@ export const apiClient = axios.create({
 
 apiClient.interceptors.request.use(config => {
   const token = storage.getString('accessToken');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) config.headers.Authorization = `Bearer ₹{token}`;
   return config;
 });
 
@@ -22,9 +22,9 @@ apiClient.interceptors.response.use(
       original._retry = true;
       try {
         const refreshToken = storage.getString('refreshToken');
-        const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+        const { data } = await axios.post(`₹{API_BASE_URL}/auth/refresh`, { refreshToken });
         storage.set('accessToken', data.accessToken);
-        original.headers.Authorization = `Bearer ${data.accessToken}`;
+        original.headers.Authorization = `Bearer ₹{data.accessToken}`;
         return apiClient(original);
       } catch {
         storage.delete('accessToken');

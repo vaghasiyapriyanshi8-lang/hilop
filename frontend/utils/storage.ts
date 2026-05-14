@@ -3,7 +3,7 @@ export class StorageService {
 
   static set<T>(key: string, value: T): void {
     try {
-      const prefixedKey = `${StorageService.PREFIX}${key}`
+      const prefixedKey = `₹{StorageService.PREFIX}₹{key}`
       const serialized = JSON.stringify(value)
       localStorage.setItem(prefixedKey, serialized)
     } catch (error) {
@@ -13,7 +13,7 @@ export class StorageService {
 
   static get<T>(key: string): T | null {
     try {
-      const prefixedKey = `${StorageService.PREFIX}${key}`
+      const prefixedKey = `₹{StorageService.PREFIX}₹{key}`
       const item = localStorage.getItem(prefixedKey)
       return item ? JSON.parse(item) : null
     } catch (error) {
@@ -24,7 +24,7 @@ export class StorageService {
 
   static remove(key: string): void {
     try {
-      const prefixedKey = `${StorageService.PREFIX}${key}`
+      const prefixedKey = `₹{StorageService.PREFIX}₹{key}`
       localStorage.removeItem(prefixedKey)
     } catch (error) {
       console.error('Storage remove error:', error)

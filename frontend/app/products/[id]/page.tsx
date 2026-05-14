@@ -84,7 +84,7 @@ export default function ProductDetailPage() {
     })
     toast({
       title: 'Success',
-      description: `${product.name} added to cart`,
+      description: `₹{product.name} added to cart`,
     })
   }
 
@@ -113,12 +113,12 @@ export default function ProductDetailPage() {
                   type="button"
                   suppressHydrationWarning
                   onClick={() => setSelectedImage(index)}
-                  className={`relative h-24 overflow-hidden rounded-lg border-2 transition-colors ${
+                  className={`relative h-24 overflow-hidden rounded-lg border-2 transition-colors ₹{
                     selectedImage === index ? 'border-hilop-green' : 'border-gray-200'
                   }`}
                   whileHover={{ scale: 1.05 }}
                 >
-                  <Image src={image} alt={`View ${index + 1}`} fill className="object-cover" />
+                  <Image src={image} alt={`View ₹{index + 1}`} fill className="object-cover" />
                 </motion.button>
               ))}
             </div>
@@ -138,7 +138,7 @@ export default function ProductDetailPage() {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-5 w-5 ${
+                      className={`h-5 w-5 ₹{
                         i < Math.floor(product.rating)
                           ? 'fill-yellow-400 text-yellow-400'
                           : 'text-gray-300'
@@ -155,12 +155,12 @@ export default function ProductDetailPage() {
             <div>
               <div className="mb-2 flex flex-wrap items-center gap-3">
                 <span className="text-4xl font-bold text-hilop-green">
-                  ${product.price.toLocaleString()}
+                  ₹{product.price.toLocaleString()}
                 </span>
                 {originalPrice && (
                   <>
                     <span className="text-2xl text-gray-400 line-through">
-                      ${originalPrice.toLocaleString()}
+                      ₹{originalPrice.toLocaleString()}
                     </span>
                     <span className="rounded-full bg-red-100 px-3 py-1 font-semibold text-red-600">
                       -{discount}%
@@ -169,7 +169,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
               <p className={product.inStock ? 'font-semibold text-green-600' : 'font-semibold text-red-600'}>
-                {product.inStock ? `${product.stockQuantity} in stock` : 'Out of stock'}
+                {product.inStock ? `₹{product.stockQuantity} in stock` : 'Out of stock'}
               </p>
             </div>
 
@@ -214,7 +214,7 @@ export default function ProductDetailPage() {
                   onClick={() => setIsWishlisted(!isWishlisted)}
                   className={isWishlisted ? 'text-red-600' : ''}
                 >
-                  <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-red-600' : ''}`} />
+                  <Heart className={`h-5 w-5 ₹{isWishlisted ? 'fill-red-600' : ''}`} />
                 </Button>
                 <Button size="lg" variant="outline">
                   <Share2 className="h-5 w-5" />

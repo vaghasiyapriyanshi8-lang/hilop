@@ -1,10 +1,12 @@
 import { OrderModel } from '../orders/order.model';
 import { UserModel } from '../users/user.model';
+import { ProductModel } from '../products/product.model';
 
 export class AnalyticsService {
   static async overview() {
     const totalOrders = await OrderModel.countDocuments();
     const totalUsers = await UserModel.countDocuments();
+    const totalProducts = await ProductModel.countDocuments();
 
     const revenueResult = await OrderModel.aggregate([
       { $match: { paymentStatus: 'paid' } },
@@ -66,6 +68,7 @@ export class AnalyticsService {
       revenue,
       orders: totalOrders,
       activeUsers: totalUsers,
+      totalProducts,
       conversionRate,
       revenueData,
       topSellingCategories: categorySalesPipeline.map((item) => item.category),

@@ -12,6 +12,7 @@ import { Colors, Typography, Spacing } from '../../theme';
 import { apiClient } from '../../services/api/client';
 import { ENDPOINTS } from '../../constants/api';
 import { Order } from '../../types';
+import { formatCurrency } from '../../utils/format';
 
 type Props = {
   navigation: NativeStackNavigationProp<CartStackParamList, 'OrderSuccess'>;
@@ -84,7 +85,7 @@ export default function OrderDetailScreen({ navigation, route }: Props) {
 
   const cancelMutation = useMutation({
     mutationFn: () =>
-      apiClient.patch(`${ENDPOINTS.ORDER_DETAIL(orderId)}/cancel`),
+      apiClient.patch(`₹{ENDPOINTS.ORDER_DETAIL(orderId)}/cancel`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
@@ -181,7 +182,7 @@ export default function OrderDetailScreen({ navigation, route }: Props) {
                 <Text style={styles.itemQty}>Qty: {item.quantity}</Text>
               </View>
               <Text style={styles.itemPrice}>
-                ₹{((item.product.discountPrice ?? item.product.price) * item.quantity).toLocaleString()}
+                {formatCurrency((item.product.discountPrice ?? item.product.price) * item.quantity)}
               </Text>
             </View>
           ))}
@@ -212,7 +213,7 @@ export default function OrderDetailScreen({ navigation, route }: Props) {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Price Details</Text>
           {[
-            { label: 'Subtotal', value: `₹${order.totalPrice.toLocaleString()}` },
+            { label: 'Subtotal', value: formatCurrency(order.totalPrice) },
             { label: 'Shipping', value: 'FREE' },
             { label: 'Tax (18% GST)', value: 'Included' },
           ].map(row => (
@@ -229,7 +230,7 @@ export default function OrderDetailScreen({ navigation, route }: Props) {
           <View style={styles.priceDivider} />
           <View style={styles.priceRow}>
             <Text style={styles.totalLabel}>Total Paid</Text>
-            <Text style={styles.totalValue}>₹{order.totalPrice.toLocaleString()}</Text>
+            <Text style={styles.totalValue}>{formatCurrency(order.totalPrice)}</Text>
           </View>
         </View>
 

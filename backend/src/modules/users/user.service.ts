@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { UserDocument, UserModel } from './user.model';
 import { sendEmail } from '../../utils/email';
 
@@ -47,5 +48,14 @@ export class UserService {
     const user = await UserModel.findById(userId);
     if (!user) throw new Error('User not found');
     await sendEmail(user.email, subject, message);
+  }
+
+  static async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await UserModel.findById(userId).select('+password');
+    if (!user) throw new Error('User not found');
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) throw new Error('Current password is incorrect');
+    user.password = await bcrypt.hash(newPassword, 12);
+    await user.save();
   }
 }

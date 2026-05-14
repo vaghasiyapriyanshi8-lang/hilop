@@ -43,14 +43,14 @@ function ProductCard({ product }: { product: Product }) {
               className="rounded-full"
               onClick={() => setIsWishlisted(!isWishlisted)}
             >
-              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
+              <Heart className={`w-5 h-5 ₹{isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
             </Button>
             <Button
               asChild
               size="icon"
               className="rounded-full bg-hilop-green hover:bg-hilop-green/90"
             >
-              <Link href={`/products/${product.slug || product.id}`}>
+              <Link href={`/products/₹{product.slug || product.id}`}>
                 <Eye className="w-5 h-5 text-white" />
               </Link>
             </Button>
@@ -64,7 +64,7 @@ function ProductCard({ product }: { product: Product }) {
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-4 w-4 ${
+                  className={`h-4 w-4 ₹{
                     i < Math.floor(product.rating || 0)
                       ? 'fill-yellow-400 text-yellow-400'
                       : 'fill-gray-200 text-gray-200'
@@ -75,9 +75,9 @@ function ProductCard({ product }: { product: Product }) {
             <span className="text-sm text-gray-500">({product.reviewCount || 0})</span>
           </div>
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-xl font-bold text-hilop-green">${product.price.toLocaleString()}</span>
+            <span className="text-xl font-bold text-hilop-green">₹{product.price.toLocaleString()}</span>
             {product.originalPrice && (
-              <span className="text-sm text-gray-400 line-through">${product.originalPrice.toLocaleString()}</span>
+              <span className="text-sm text-gray-400 line-through">₹{product.originalPrice.toLocaleString()}</span>
             )}
           </div>
           <Button
@@ -85,7 +85,7 @@ function ProductCard({ product }: { product: Product }) {
             variant="outline"
             className="w-full hover:bg-hilop-green hover:text-white hover:border-hilop-green"
           >
-            <Link href={`/products/${product.slug || product.id}`}>
+            <Link href={`/products/₹{product.slug || product.id}`}>
               View Details
             </Link>
           </Button>

@@ -19,8 +19,6 @@ export class CategoryService {
 
     if (query.parent) {
       filter.parent = query.parent;
-    } else {
-      filter.parent = { $exists: false };
     }
 
     if (query.search) {
@@ -89,7 +87,14 @@ export class CategoryService {
 
   static async update(id: string, payload: Partial<CategoryDocument>) {
     if (payload.name && !payload.slug) {
-      payload.slug = normalizeSlug(payload.name);
+      const newSlug = normalizeSlug(payload.name);
+      // Only update slug if it actually changed to avoid duplicate key error
+      const existing = await CategoryModel.findById(id).lean();
+      if (existing && existing.slug !== newSlug) {
+        payload.slug = newSlug;
+      } else {
+        delete payload.slug;
+      }
     }
 
     const category = await CategoryModel.findByIdAndUpdate(id, payload, {
@@ -101,7 +106,7 @@ export class CategoryService {
     const productCount = await ProductModel.countDocuments({ category: category.slug });
     return {
       ...category,
-      id: category._id.toString(), // Map _id to id for frontend compatibility
+      id: category._id.toString(),
       productCount,
     };
   }

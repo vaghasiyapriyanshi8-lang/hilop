@@ -19,7 +19,7 @@ export const categoryService = {
   },
 
   getCategoryById: async (id: string) => {
-    const response = await apiClient.get(`/products/categories/${id}`);
+    const response = await apiClient.get(`/products/categories/₹{id}`);
     return response.data;
   },
 
@@ -29,11 +29,11 @@ export const categoryService = {
   },
 
   updateCategory: async (id: string, data: Partial<CreateCategoryData>) => {
-    const response = await apiClient.patch(`/products/categories/${id}`, data);
+    const response = await apiClient.patch(`/products/categories/₹{id}`, data);
     return response.data;
   },
 
   deleteCategory: async (id: string) => {
-    await apiClient.delete(`/products/categories/${id}`);
+    await apiClient.delete(`/products/categories/₹{id}`);
   },
 };

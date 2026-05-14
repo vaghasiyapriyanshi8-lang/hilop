@@ -72,7 +72,7 @@ export default function LoginPage() {
                 <input
                   {...register('email')}
                   type="email"
-                  className={`block w-full pl-10 pr-3 py-2 border ${
+                  className={`block w-full pl-10 pr-3 py-2 border ₹{
                     errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
                   } rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out`}
                   placeholder="admin@hilop.com"
@@ -94,7 +94,7 @@ export default function LoginPage() {
                 <input
                   {...register('password')}
                   type="password"
-                  className={`block w-full pl-10 pr-3 py-2 border ${
+                  className={`block w-full pl-10 pr-3 py-2 border ₹{
                     errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
                   } rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out`}
                   placeholder="••••••••"

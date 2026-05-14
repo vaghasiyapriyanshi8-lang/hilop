@@ -30,12 +30,12 @@ export const usersService = {
   },
 
   async updateAddress(addressId: string, data: Partial<AddAddressData>): Promise<Address> {
-    const response = await api.patch(`/users/me/addresses/${addressId}`, data)
+    const response = await api.patch(`/users/me/addresses/₹{addressId}`, data)
     return response.data.data
   },
 
   async deleteAddress(addressId: string): Promise<void> {
-    await api.delete(`/users/me/addresses/${addressId}`)
+    await api.delete(`/users/me/addresses/₹{addressId}`)
   },
 
   async getAddresses(): Promise<Address[]> {

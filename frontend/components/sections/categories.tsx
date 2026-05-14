@@ -1,42 +1,29 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
-import { ArrowRight, Crown, Dumbbell, Smartphone, Watch } from 'lucide-react'
+import { ArrowRight, Watch } from 'lucide-react'
+import api from '@/lib/api'
 
-const CATEGORIES = [
-  {
-    id: '1',
-    name: 'Dress Watches',
-    slug: 'dress-watches',
-    Icon: Watch,
-    description: 'Elegant timepieces for formal occasions',
-  },
-  {
-    id: '2',
-    name: 'Sport Watches',
-    slug: 'sport-watches',
-    Icon: Dumbbell,
-    description: 'Durable watches for active lifestyles',
-  },
-  {
-    id: '3',
-    name: 'Digital Watches',
-    slug: 'digital-watches',
-    Icon: Smartphone,
-    description: 'Modern tech-integrated timepieces',
-  },
-  {
-    id: '4',
-    name: 'Luxury Collection',
-    slug: 'luxury-collection',
-    Icon: Crown,
-    description: 'Premium handcrafted masterpieces',
-  },
-]
+interface Category {
+  id: string
+  name: string
+  slug: string
+  description: string
+}
 
 export function Categories() {
+  const [categories, setCategories] = useState<Category[]>([])
+
+  useEffect(() => {
+    api
+      .get('/products/categories/all')
+      .then((res) => setCategories(res.data?.data ?? []))
+      .catch(() => {})
+  }, [])
+
   return (
     <section className="bg-gray-50 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -60,7 +47,7 @@ export function Categories() {
           transition={{ staggerChildren: 0.1 }}
           viewport={{ once: true }}
         >
-          {CATEGORIES.map((category, index) => (
+          {categories.map((category, index) => (
             <motion.div
               key={category.id}
               initial={{ opacity: 0, y: 20 }}
@@ -68,11 +55,11 @@ export function Categories() {
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <Link href={`/products?category=${category.slug}`}>
+              <Link href={`/products?category=₹{category.slug}`}>
                 <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.3 }}>
                   <Card className="group h-full cursor-pointer p-5 transition-all hover:-translate-y-1 hover:border-hilop-green/40 hover:shadow-xl sm:p-6">
                     <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-hilop-green/10 text-hilop-green">
-                      <category.Icon className="h-6 w-6" />
+                      <Watch className="h-6 w-6" />
                     </div>
                     <h3 className="mb-2 text-lg font-bold sm:text-xl">{category.name}</h3>
                     <p className="min-h-10 text-sm leading-6 text-gray-600">

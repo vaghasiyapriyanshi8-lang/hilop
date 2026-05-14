@@ -25,6 +25,20 @@ export class UserController {
     res.status(200).json({ data: user });
   }
 
+  static async changePassword(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user.id;
+      const { currentPassword, newPassword } = req.body;
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: 'Current and new password are required' });
+      }
+      await UserService.changePassword(userId, currentPassword, newPassword);
+      res.status(200).json({ message: 'Password changed successfully' });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
   static async blockUser(req: Request, res: Response) {
     const { blocked } = req.body;
     const user = await UserService.setBlocked(req.params.id, blocked);

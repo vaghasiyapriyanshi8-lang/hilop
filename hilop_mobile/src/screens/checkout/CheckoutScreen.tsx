@@ -181,9 +181,9 @@ function OrderReview({
         <Text style={reviewStyles.sectionTitle}>Price Breakdown</Text>
         <View style={reviewStyles.card}>
           {[
-            { label: 'Subtotal', value: `₹${subtotal.toLocaleString()}` },
-            { label: 'Shipping', value: shipping === 0 ? 'FREE' : `₹${shipping}` },
-            { label: 'Tax (18% GST)', value: `₹${tax.toLocaleString()}` },
+            { label: 'Subtotal', value: `₹₹{subtotal.toLocaleString()}` },
+            { label: 'Shipping', value: shipping === 0 ? 'FREE' : `₹₹{shipping}` },
+            { label: 'Tax (18% GST)', value: `₹₹{tax.toLocaleString()}` },
           ].map(row => (
             <View key={row.label} style={reviewStyles.priceRow}>
               <Text style={reviewStyles.priceLabel}>{row.label}</Text>
@@ -343,9 +343,9 @@ export default function CheckoutScreen({ navigation }: Props) {
             <View style={styles.miniSummary}>
               <Text style={styles.miniSummaryTitle}>Order Total</Text>
               {[
-                { label: 'Subtotal', value: `₹${subtotal.toLocaleString()}` },
-                { label: 'Shipping', value: shipping === 0 ? 'FREE' : `₹${shipping}` },
-                { label: 'Tax', value: `₹${tax.toLocaleString()}` },
+                { label: 'Subtotal', value: `₹₹{subtotal.toLocaleString()}` },
+                { label: 'Shipping', value: shipping === 0 ? 'FREE' : `₹₹{shipping}` },
+                { label: 'Tax', value: `₹₹{tax.toLocaleString()}` },
               ].map(row => (
                 <View key={row.label} style={styles.miniRow}>
                   <Text style={styles.miniLabel}>{row.label}</Text>

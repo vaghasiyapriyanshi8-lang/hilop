@@ -14,7 +14,7 @@ export const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken')
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ₹{token}`
   }
   return config
 })
@@ -31,14 +31,14 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refreshToken')
         if (refreshToken) {
-          const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+          const response = await axios.post(`₹{API_BASE_URL}/auth/refresh`, {
             refreshToken,
           })
 
           const { accessToken } = response.data
           localStorage.setItem('accessToken', accessToken)
 
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`
+          originalRequest.headers.Authorization = `Bearer ₹{accessToken}`
           return api(originalRequest)
         }
       } catch (refreshError) {

@@ -32,7 +32,7 @@ export const ordersService = {
   },
 
   async getOrder(id: string): Promise<Order> {
-    const response = await api.get(`/orders/${id}`)
+    const response = await api.get(`/orders/₹{id}`)
     return response.data.data
   },
 

@@ -6,11 +6,11 @@ export const orderService = {
     return response.data;
   },
   getOrder: async (id: string) => {
-    const response = await apiClient.get(`/orders/${id}`);
+    const response = await apiClient.get(`/orders/₹{id}`);
     return response.data;
   },
   updateOrderStatus: async (id: string, status: string) => {
-    const response = await apiClient.patch(`/orders/${id}/status`, { status });
+    const response = await apiClient.patch(`/orders/₹{id}/status`, { status });
     return response.data;
   },
 };

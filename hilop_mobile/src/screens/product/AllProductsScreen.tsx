@@ -11,6 +11,7 @@ import { HomeStackParamList } from '../../navigation/types';
 import { Colors, Typography, Spacing } from '../../theme';
 import { apiClient } from '../../services/api/client';
 import { Product } from '../../types';
+import { formatCurrency } from '../../utils/format';
 
 const { width } = Dimensions.get('window');
 const CARD_W = (width - Spacing.lg * 2 - Spacing.md) / 2;
@@ -58,11 +59,11 @@ function ProductCard({
         <Text style={cardStyles.name} numberOfLines={2}>{product.name}</Text>
         <View style={cardStyles.priceRow}>
           <Text style={cardStyles.price}>
-            ₹{(product.discountPrice ?? product.price).toLocaleString()}
+            {formatCurrency(product.discountPrice ?? product.price)}
           </Text>
           {product.discountPrice && (
             <Text style={cardStyles.originalPrice}>
-              ₹{product.price.toLocaleString()}
+              {formatCurrency(product.price)}
             </Text>
           )}
         </View>
