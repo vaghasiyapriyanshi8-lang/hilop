@@ -30,13 +30,13 @@ export default function OrderDetailsPage() {
   const { data: order, isLoading } = useQuery({
     queryKey: ['order', id],
     queryFn: async () => {
-      const response = await apiClient.get(`/orders/₹{id}`);
+      const response = await apiClient.get(`/orders/${id}`);
       return response.data;
     },
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: (status: string) => apiClient.patch(`/orders/₹{id}/status`, { status }),
+    mutationFn: (status: string) => apiClient.patch(`/orders/${id}/status`, { status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order', id] });
       toast.success('Order status updated');
@@ -200,7 +200,7 @@ export default function OrderDetailsPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold text-gray-900 dark:text-white">{order.customerName}</p>
-                  <Link href={`/users/₹{order.customerId}`} className="text-xs text-blue-600 hover:underline flex items-center">
+                  <Link href={`/users/${order.customerId}`} className="text-xs text-blue-600 hover:underline flex items-center">
                     View profile <ExternalLink className="w-3 h-3 ml-1" />
                   </Link>
                 </div>

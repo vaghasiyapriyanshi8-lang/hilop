@@ -5,8 +5,8 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Eye, Heart, Loader2, Star } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Eye, Heart, Loader2, Star, Sparkles, ArrowRight, Watch, Shield, Clock } from 'lucide-react'
+import { useEffect, useState, useCallback } from 'react'
 import { productsService } from '@/services/api/products'
 import { Product } from '@/types'
 import { formatPrice } from '@/utils/format'
@@ -97,22 +97,140 @@ function ProductCard({ product }: { product: Product }) {
   )
 }
 
+// Placeholder component when no featured products exist
+function FeaturedPlaceholder() {
+  return (
+    <motion.div
+      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-black py-16 px-6 sm:py-20"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
+    >
+      {/* Background decoration */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 left-0 w-64 h-64 bg-hilop-green rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-64 h-64 bg-hilop-green rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto max-w-3xl text-center">
+        <motion.div
+          className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-hilop-green/20 backdrop-blur-sm"
+          initial={{ scale: 0 }}
+          whileInView={{ scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Sparkles className="h-10 w-10 text-hilop-green" />
+        </motion.div>
+
+        <motion.h2
+          className="mb-4 text-3xl font-bold text-white sm:text-4xl"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          Featured Collection Coming Soon
+        </motion.h2>
+
+        <motion.p
+          className="mb-8 text-lg text-gray-300"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          We're curating our finest luxury timepieces for you. 
+          Stay tuned for an exclusive selection of premium watches.
+        </motion.p>
+
+        <motion.div
+          className="grid grid-cols-1 gap-4 sm:grid-cols-3"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-white/5 p-4 backdrop-blur-sm">
+            <Watch className="h-6 w-6 text-hilop-green" />
+            <span className="text-sm text-gray-300">Premium Quality</span>
+          </div>
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-white/5 p-4 backdrop-blur-sm">
+            <Shield className="h-6 w-6 text-hilop-green" />
+            <span className="text-sm text-gray-300">2-Year Warranty</span>
+          </div>
+          <div className="flex flex-col items-center gap-2 rounded-2xl bg-white/5 p-4 backdrop-blur-sm">
+            <Clock className="h-6 w-6 text-hilop-green" />
+            <span className="text-sm text-gray-300">Timeless Design</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
+          <Button asChild size="lg" className="mt-8 bg-hilop-green text-black hover:bg-hilop-green/90">
+            <Link href="/products" className="flex items-center gap-2">
+              Browse All Products
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </motion.div>
+      </div>
+    </motion.div>
+  )
+}
+
 export function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [lastUpdated, setLastUpdated] = useState('')
+  const [collectionInfo, setCollectionInfo] = useState({
+    title: 'Featured Collection',
+    description: 'Discover our handpicked collection of the finest luxury timepieces.',
+  })
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await productsService.getFeaturedProducts()
-        setProducts(data)
-      } finally {
-        setLoading(false)
-      }
+  const fetchProducts = useCallback(async () => {
+    try {
+      const data = await productsService.getFeaturedProducts()
+      setProducts(data)
+      setLastUpdated(new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }))
+      generateCollectionInfo(data)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const generateCollectionInfo = (prods: Product[]) => {
+    if (prods.length === 0) return
+
+    const brands = prods.map((p) => p.brand).filter(Boolean)
+    const uniqueBrands = [...new Set(brands)].slice(0, 2)
+    const brandText = uniqueBrands.join(' & ')
+
+    const avgPrice = prods.reduce((sum, p) => sum + (p.price || 0), 0) / prods.length
+    const priceRange = avgPrice > 50000 ? 'Premium' : 'Luxury'
+
+    const hasDeal = prods.some((p) => p.originalPrice && p.originalPrice > p.price)
+
+    let title = 'Featured Collection'
+    let description = 'Discover our handpicked collection of the finest luxury timepieces.'
+
+    if (brandText) {
+      title = `Featured: ${brandText} & More`
+      description = `Explore our curated selection of ${priceRange.toLowerCase()} watches from renowned brands. ${
+        hasDeal ? 'Special pricing available on selected pieces.' : 'Premium craftsmanship at its finest.'
+      }`
     }
 
+    setCollectionInfo({ title, description })
+  }
+
+  useEffect(() => {
     fetchProducts()
-  }, [])
+
+    // Real-time updates: refetch every 30 seconds
+    const interval = setInterval(fetchProducts, 30000)
+    return () => clearInterval(interval)
+  }, [fetchProducts])
 
   return (
     <section id="featured" className="px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
@@ -124,10 +242,13 @@ export function FeaturedProducts() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2 className="mb-3 text-3xl font-bold sm:text-4xl">Featured Collection</h2>
+          <h2 className="mb-3 text-3xl font-bold sm:text-4xl">{collectionInfo.title}</h2>
           <p className="text-sm leading-6 text-gray-600 sm:text-base">
-            Explore the latest watches added by the Hilop admin team.
+            {collectionInfo.description}
           </p>
+          {lastUpdated && (
+            <p className="mt-2 text-xs text-gray-400">Last updated: {lastUpdated}</p>
+          )}
         </motion.div>
 
         {loading ? (
@@ -136,7 +257,7 @@ export function FeaturedProducts() {
           </div>
         ) : products.length > 0 ? (
           <motion.div
-            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ staggerChildren: 0.1 }}
@@ -155,7 +276,7 @@ export function FeaturedProducts() {
             ))}
           </motion.div>
         ) : (
-          <p className="text-center text-gray-500">No products available yet.</p>
+          <FeaturedPlaceholder />
         )}
 
         <motion.div

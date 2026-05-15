@@ -136,7 +136,7 @@ export default function OrdersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Link 
-                      href={`/orders/₹{order.id}`}
+                      href={`/orders/${order.id}`}
                       className="inline-flex items-center text-sm text-blue-600 hover:underline"
                     >
                       <Eye className="w-4 h-4 mr-1" />

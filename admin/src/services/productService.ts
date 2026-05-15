@@ -24,4 +24,16 @@ export const productService = {
   deleteProduct: async (id: string) => {
     await apiClient.delete(`/products/₹{id}`);
   },
+  getFeaturedProducts: async (params: { page?: number; limit?: number } = {}) => {
+    const response = await apiClient.get('/products/admin/featured', { params });
+    return response.data;
+  },
+  toggleFeatured: async (id: string) => {
+    const response = await apiClient.post(`/products/₹{id}/toggle-featured`);
+    return response.data;
+  },
+  setFeatured: async (id: string, isFeatured: boolean) => {
+    const response = await apiClient.patch(`/products/₹{id}/featured`, { isFeatured });
+    return response.data;
+  },
 };

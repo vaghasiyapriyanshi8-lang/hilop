@@ -61,10 +61,10 @@ export default function UsersPage() {
   });
 
   const handleSendEmail = (user: any) => {
-    const subject = prompt(`Enter subject for email to ₹{user.name}:`, 'Message from Hilop Admin');
+    const subject = prompt(`Enter subject for email to ${user.name}:`, 'Message from Hilop Admin');
     if (!subject) return;
     
-    const message = prompt(`Enter message for ₹{user.name}:`);
+    const message = prompt(`Enter message for ${user.name}:`);
     if (!message) return;
 
     sendEmailMutation.mutate({ id: user._id || user.id, subject, message });

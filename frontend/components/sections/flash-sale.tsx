@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Clock } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 const FLASH_SALES = [
   {
@@ -14,7 +15,7 @@ const FLASH_SALES = [
     price: 799,
     originalPrice: 1299,
     image: '/images/watch-urban.svg',
-    timeLeft: '02:45:30',
+    endTime: Date.now() + 2 * 60 * 60 * 1000 + 45 * 60 * 1000 + 30 * 1000, // 2h 45m 30s from now
     sold: 12,
     total: 50,
   },
@@ -24,7 +25,7 @@ const FLASH_SALES = [
     price: 699,
     originalPrice: 999,
     image: '/images/watch-stellar.svg',
-    timeLeft: '03:15:45',
+    endTime: Date.now() + 3 * 60 * 60 * 1000 + 15 * 60 * 1000 + 45 * 1000, // 3h 15m 45s from now
     sold: 28,
     total: 40,
   },
@@ -34,11 +35,36 @@ const FLASH_SALES = [
     price: 549,
     originalPrice: 799,
     image: '/images/watch-elegance.svg',
-    timeLeft: '01:30:20',
+    endTime: Date.now() + 1 * 60 * 60 * 1000 + 30 * 60 * 1000 + 20 * 1000, // 1h 30m 20s from now
     sold: 35,
     total: 50,
   },
 ]
+
+function CountdownTimer({ endTime }: { endTime: number }) {
+  const [timeLeft, setTimeLeft] = useState('00:00:00')
+  
+  useEffect(() => {
+    const updateTimer = () => {
+      const now = Date.now()
+      const diff = Math.max(0, endTime - now)
+      
+      const hours = Math.floor(diff / (1000 * 60 * 60))
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+      
+      setTimeLeft(
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+      )
+    }
+    
+    updateTimer()
+    const interval = setInterval(updateTimer, 1000)
+    return () => clearInterval(interval)
+  }, [endTime])
+  
+  return timeLeft
+}
 
 export function FlashSale() {
   return (
@@ -103,7 +129,7 @@ export function FlashSale() {
                     animate={{ opacity: [0.8, 1, 0.8] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    {sale.timeLeft}
+                    <CountdownTimer endTime={sale.endTime} />
                   </motion.div>
                 </div>
 

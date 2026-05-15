@@ -42,7 +42,8 @@ const productSchema = z.object({
     .optional(),
 });
 
-type ProductFormValues = z.infer<typeof productSchema>;
+type ProductFormInput = z.input<typeof productSchema>;
+type ProductFormValues = z.output<typeof productSchema>;
 
 export default function EditProductPage() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function EditProductPage() {
   const { data, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
-      const res = await apiClient.get(`/products/admin/by-id/₹{id}`);
+      const res = await apiClient.get(`/products/admin/by-id/${id}`);
       return res.data?.data;
     },
   });
@@ -76,7 +77,7 @@ export default function EditProductPage() {
     control,
     reset,
     formState: { errors },
-  } = useForm<ProductFormValues>({
+  } = useForm<ProductFormInput, unknown, ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: { status: 'active', variants: [] },
   });
@@ -121,11 +122,11 @@ export default function EditProductPage() {
         });
         existingImages.forEach((url) => fd.append('existingImages', url));
         newImages.forEach((img) => fd.append('images', img));
-        return apiClient.patch(`/products/₹{id}`, fd, {
+        return apiClient.patch(`/products/${id}`, fd, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       }
-      return apiClient.patch(`/products/₹{id}`, {
+      return apiClient.patch(`/products/${id}`, {
         ...formData,
         variants: formData.variants ?? [],
         existingImages,
@@ -264,12 +265,12 @@ export default function EditProductPage() {
                 >
                   <div className="flex-1 space-y-3">
                     <input
-                      {...register(`variants.₹{index}.name`)}
+                      {...register(`variants.${index}.name`)}
                       placeholder="Variant Name (e.g. Size, Color)"
                       className="w-full px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                     <input
-                      {...register(`variants.₹{index}.options`)}
+                      {...register(`variants.${index}.options`)}
                       placeholder="Options (comma separated: S, M, L)"
                       className="w-full px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                     />

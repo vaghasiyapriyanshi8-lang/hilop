@@ -21,10 +21,14 @@ router.delete('/categories/:id', AuthMiddleware.requireAuth, AuthMiddleware.rest
 router.get('/', ProductController.list);
 router.get('/admin/all', AuthMiddleware.requireAuth, AuthMiddleware.restrictTo('admin'), ProductController.adminList);
 router.get('/admin/by-id/:id', AuthMiddleware.requireAuth, AuthMiddleware.restrictTo('admin'), ProductController.getProductById);
+router.get('/featured', ProductController.getFeatured);
+router.get('/admin/featured', AuthMiddleware.requireAuth, AuthMiddleware.restrictTo('admin'), ProductController.getFeaturedList);
 router.get('/search', ProductController.search);
 router.get('/:slug', ProductController.getProduct);
 router.post('/', AuthMiddleware.requireAuth, AuthMiddleware.restrictTo('admin'), upload.array('images'), ProductController.createProduct);
 router.patch('/:id', AuthMiddleware.requireAuth, AuthMiddleware.restrictTo('admin'), upload.array('images'), ProductController.updateProduct);
+router.patch('/:id/featured', AuthMiddleware.requireAuth, AuthMiddleware.restrictTo('admin'), ProductController.setFeatured);
+router.post('/:id/toggle-featured', AuthMiddleware.requireAuth, AuthMiddleware.restrictTo('admin'), ProductController.toggleFeatured);
 router.delete('/:id', AuthMiddleware.requireAuth, AuthMiddleware.restrictTo('admin'), ProductController.deleteProduct);
 
 export const productRoutes = router;

@@ -235,12 +235,12 @@ export default function NewProductPage() {
                 <div key={field.id} className="flex gap-4 items-start p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
                   <div className="flex-1 space-y-3">
                     <input
-                      {...register(`variants.₹{index}.name`)}
+                      {...register(`variants.${index}.name`)}
                       placeholder="Variant Name (e.g. Size, Color)"
                       className="w-full px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                     <input
-                      {...register(`variants.₹{index}.options`)}
+                      {...register(`variants.${index}.options`)}
                       placeholder="Options (comma separated: S, M, L)"
                       className="w-full px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                     />

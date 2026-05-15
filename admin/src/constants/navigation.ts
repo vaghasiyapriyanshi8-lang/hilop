@@ -5,6 +5,7 @@ import {
   Users,
   CreditCard,
   Settings,
+  Star,
 } from 'lucide-react';
 
 export const NAVIGATION_ITEMS = [
@@ -19,9 +20,15 @@ export const NAVIGATION_ITEMS = [
     icon: Package,
     children: [
       { name: 'All Products', href: '/products' },
+      { name: 'Featured Collection', href: '/featured' },
       { name: 'Add Product', href: '/products/new' },
       { name: 'Categories', href: '/products/categories' },
     ],
+  },
+  {
+    name: 'Featured',
+    href: '/featured',
+    icon: Star,
   },
   {
     name: 'Orders',

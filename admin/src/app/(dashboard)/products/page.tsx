@@ -150,7 +150,7 @@ export default function ProductsPage() {
                               'h-full rounded-full',
                               product.stock <= 5 ? 'bg-red-500' : 'bg-blue-500'
                             )}
-                            style={{ width: `₹{Math.min((product.stock / 100) * 100, 100)}%` }}
+                            style={{ width: `${Math.min((product.stock / 100) * 100, 100)}%` }}
                           />
                         </div>
                       </div>
@@ -166,13 +166,13 @@ export default function ProductsPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <Link
-                          href={`/products/₹{productId}`}
+                          href={`/products/${productId}`}
                           className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </Link>
                         <Link
-                          href={`/products/edit/₹{productId}`}
+                          href={`/products/edit/${productId}`}
                           className="p-1 text-gray-400 hover:text-emerald-600 transition-colors"
                         >
                           <Edit className="w-4 h-4" />

@@ -98,7 +98,7 @@ export const productsService = {
   },
 
   async getFeaturedProducts(): Promise<Product[]> {
-    const response = await api.get('/products', { params: { limit: 4 } })
+    const response = await api.get('/products/featured', { params: { limit: 8 } })
     return normalizeProductsResponse(response.data).data
   },
 

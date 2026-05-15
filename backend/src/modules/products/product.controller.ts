@@ -157,4 +157,40 @@ export class ProductController {
     const categories = await ProductService.getCategories();
     res.status(200).json({ data: categories });
   }
+
+  static async getFeatured(req: Request, res: Response) {
+    const payload = await ProductService.getFeatured({
+      limit: Number(req.query.limit ?? 8),
+    });
+    res.status(200).json(payload);
+  }
+
+  static async toggleFeatured(req: Request, res: Response) {
+    const { id } = req.params;
+    const product = await ProductService.getById(id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    const updated = await ProductService.update(id, { isFeatured: !product.isFeatured });
+    if (!updated) return res.status(404).json({ message: 'Product not found' });
+    res.status(200).json({ data: updated, message: `Product ${updated.isFeatured ? 'added to' : 'removed from'} featured collection` });
+  }
+
+  static async setFeatured(req: Request, res: Response) {
+    const { id } = req.params;
+    const { isFeatured } = req.body;
+    const product = await ProductService.getById(id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    const updated = await ProductService.update(id, { isFeatured: isFeatured === true });
+    if (!updated) return res.status(404).json({ message: 'Product not found' });
+    res.status(200).json({ data: updated });
+  }
+
+  static async getFeaturedList(req: Request, res: Response) {
+    const payload = await ProductService.getFeaturedList({
+      page: Number(req.query.page ?? 1),
+      limit: Number(req.query.limit ?? 24),
+    });
+    res.status(200).json(payload);
+  }
 }

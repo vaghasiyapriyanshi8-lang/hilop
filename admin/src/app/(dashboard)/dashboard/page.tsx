@@ -150,7 +150,7 @@ export default function DashboardPage() {
                     axisLine={false} 
                     tickLine={false} 
                     tick={{ fontSize: 12, fill: '#6b7280' }}
-                    tickFormatter={(value) => `₹₹{value}`}
+                    tickFormatter={(value) => `₹${value}`}
                   />
                   <Tooltip 
                     contentStyle={{ 
@@ -211,7 +211,7 @@ export default function DashboardPage() {
                   />
                   <Bar dataKey="sales" radius={[4, 4, 0, 0]}>
                     {categorySales.map((entry: any, index: number) => (
-                      <Cell key={`cell-₹{index}`} fill={['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'][index % 4]} />
+                      <Cell key={`cell-${index}`} fill={['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'][index % 4]} />
                     ))}
                   </Bar>
                 </BarChart>

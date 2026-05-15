@@ -4,9 +4,22 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, ShieldCheck, Sparkles, Watch } from 'lucide-react'
+import { ArrowRight, ShieldCheck, Sparkles, Watch, TrendingUp } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 export function Hero() {
+  const [lastUpdated, setLastUpdated] = useState('Just now')
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      setLastUpdated(now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }))
+    }
+    updateTime()
+    const interval = setInterval(updateTime, 60000) // Update every minute
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <section className="relative min-h-[640px] overflow-hidden bg-black sm:min-h-[700px]">
       <Image
@@ -35,6 +48,8 @@ export function Hero() {
             <span className="text-sm font-semibold text-white">NEW COLLECTION 2026</span>
           </motion.div>
 
+         
+
           <motion.h1
             className="mb-6 max-w-xl text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
             initial={{ opacity: 0, y: 20 }}
@@ -53,7 +68,7 @@ export function Hero() {
             transition={{ delay: 0.4 }}
           >
             Discover luxury watches that blend modern design with timeless craftsmanship.
-            Every timepiece tells a story of excellence.
+            Every timepiece tells a story of excellence. Trusted by 10,000+ collectors worldwide.
           </motion.p>
 
           <motion.div
@@ -93,6 +108,15 @@ export function Hero() {
               <Sparkles className="h-4 w-4 text-hilop-green" />
               Gift ready
             </div>
+          </motion.div>
+
+          <motion.div
+            className="mt-8 text-xs text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+          >
+            Last updated: {lastUpdated} IST
           </motion.div>
         </motion.div>
       </div>
