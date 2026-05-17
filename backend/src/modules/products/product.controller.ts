@@ -22,6 +22,20 @@ function parseVariants(raw: any): any[] {
   return [];
 }
 
+function parseSpecs(raw: any): Array<{ key: string; value: string }> {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
 export class ProductController {
   static async list(req: Request, res: Response) {
     const payload = await ProductService.list({
@@ -83,6 +97,7 @@ export class ProductController {
       stock: Number(body.stock ?? 0),
       inventory: Number(body.stock ?? 0),
       variants: parseVariants(body.variants),
+      specs: parseSpecs(body.specs ?? body.specifications),
     };
 
     if (files?.length) {
@@ -116,6 +131,7 @@ export class ProductController {
       stock: body.stock !== undefined ? Number(body.stock) : undefined,
       inventory: body.stock !== undefined ? Number(body.stock) : undefined,
       variants: parseVariants(body.variants),
+      specs: parseSpecs(body.specs ?? body.specifications),
     };
 
     // Handle images: upload new files, then merge with kept existing images
@@ -157,40 +173,5 @@ export class ProductController {
     const categories = await ProductService.getCategories();
     res.status(200).json({ data: categories });
   }
-
-  static async getFeatured(req: Request, res: Response) {
-    const payload = await ProductService.getFeatured({
-      limit: Number(req.query.limit ?? 8),
-    });
-    res.status(200).json(payload);
-  }
-
-  static async toggleFeatured(req: Request, res: Response) {
-    const { id } = req.params;
-    const product = await ProductService.getById(id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    const updated = await ProductService.update(id, { isFeatured: !product.isFeatured });
-    if (!updated) return res.status(404).json({ message: 'Product not found' });
-    res.status(200).json({ data: updated, message: `Product ${updated.isFeatured ? 'added to' : 'removed from'} featured collection` });
-  }
-
-  static async setFeatured(req: Request, res: Response) {
-    const { id } = req.params;
-    const { isFeatured } = req.body;
-    const product = await ProductService.getById(id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    const updated = await ProductService.update(id, { isFeatured: isFeatured === true });
-    if (!updated) return res.status(404).json({ message: 'Product not found' });
-    res.status(200).json({ data: updated });
-  }
-
-  static async getFeaturedList(req: Request, res: Response) {
-    const payload = await ProductService.getFeaturedList({
-      page: Number(req.query.page ?? 1),
-      limit: Number(req.query.limit ?? 24),
-    });
-    res.status(200).json(payload);
-  }
+  // Featured-related controller methods removed
 }

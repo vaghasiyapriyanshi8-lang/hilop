@@ -22,7 +22,7 @@ export interface Product {
   inventory?: number
   tags: string[]
   features?: string[]
-  specs?: Record<string, string>
+  specs?: Array<{ key: string; value: string }>
   status?: string
   isFeatured?: boolean
   createdAt: string
@@ -52,8 +52,12 @@ export interface User {
   id: string
   email: string
   name: string
+  phone?: string
+  googleId?: string
   avatar?: string
   role: 'user' | 'admin'
+  cartItems?: CartItem[]
+  wishlistItems?: WishlistItem[]
   addresses?: Address[]
   createdAt: string
 }
@@ -73,6 +77,7 @@ export interface Address {
 
 export interface Order {
   id: string
+  orderNumber?: string
   userId: string
   items: OrderItem[]
   total: number
@@ -123,7 +128,10 @@ export interface CartItem {
   price: number
   image: string
   quantity: number
-  variant?: ProductVariant
+  variant?: {
+    size?: string
+    color?: string
+  } | ProductVariant
 }
 
 export interface Review {
@@ -144,6 +152,7 @@ export interface WishlistItem {
   id: string
   productId: string
   productName: string
+  productSlug: string
   productImage: string
   productPrice: number
   addedAt: string

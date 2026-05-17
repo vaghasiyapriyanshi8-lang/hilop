@@ -80,7 +80,7 @@ export default function OrderDetailScreen({ navigation, route }: Props) {
   });
 
   const cancelMutation = useMutation({
-    mutationFn: () => apiClient.patch(`₹{ENDPOINTS.ORDER_DETAIL(orderId)}/cancel`),
+    mutationFn: () => apiClient.patch(`${ENDPOINTS.ORDER_DETAIL(orderId)}/cancel`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
@@ -106,7 +106,7 @@ export default function OrderDetailScreen({ navigation, route }: Props) {
     );
   }
 
-  const order: Order = data?.order;
+  const order: Order = data?.data;
   if (!order) return null;
 
   const canCancel = ['pending', 'processing'].includes(order.status);

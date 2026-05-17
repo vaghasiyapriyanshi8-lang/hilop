@@ -1,13 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-interface User {
-  id: string
-  email: string
-  name: string
-  avatar?: string
-  role: 'user' | 'admin'
-}
+import { useCartStore } from '@/store/cart'
+import { useWishlistStore } from '@/store/wishlist'
+import { User } from '@/types'
 
 interface AuthState {
   user: User | null
@@ -26,7 +21,11 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: true,
       login: (user) => set({ user, isAuthenticated: true, isLoading: false }),
-      logout: () => set({ user: null, isAuthenticated: false, isLoading: false }),
+      logout: () => {
+        useCartStore.getState().clearCart()
+        useWishlistStore.getState().clearWishlist()
+        set({ user: null, isAuthenticated: false, isLoading: false })
+      },
       setLoading: (isLoading) => set({ isLoading }),
       updateUser: (userData) =>
         set((state) => ({

@@ -178,7 +178,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
     queryFn: () => fetchProduct(productId),
   });
 
-  const product: Product | undefined = data?.product;
+  const product: Product | undefined = data?.data;
   const reviews: Review[] = data?.reviews ?? [];
   const wishlisted = product ? isWishlisted(product._id) : false;
 
@@ -189,7 +189,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
       return;
     }
     addItem(product, qty, selectedVariant ?? undefined);
-    Alert.alert('Added to Cart', `₹{product.name} added to your cart`);
+    Alert.alert('Added to Cart', `${product.name} added to your cart`);
   };
 
   const toggleWishlist = () => {
@@ -283,7 +283,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
 
           {/* Stock */}
           <Text style={[styles.stock, product.stock === 0 && styles.outOfStock]}>
-            {product.stock > 0 ? `✓ In Stock (₹{product.stock} left)` : '✗ Out of Stock'}
+            {product.stock > 0 ? `✓ In Stock (${product.stock} left)` : '✗ Out of Stock'}
           </Text>
         </View>
 

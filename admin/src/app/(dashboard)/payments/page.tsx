@@ -56,8 +56,8 @@ export default function PaymentsPage() {
     },
   });
 
-  const orders: any[] = data?.orders ?? [];
-  const total: number = data?.count ?? 0;
+  const orders: any[] = data?.data ?? [];
+  const total: number = data?.total ?? 0;
 
   // Summary stats derived from current page — ideally from a dedicated analytics endpoint
   const { data: analytics } = useQuery({

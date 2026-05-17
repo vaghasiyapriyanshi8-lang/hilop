@@ -85,7 +85,7 @@ export default function OrderDetailScreen({ navigation, route }: Props) {
 
   const cancelMutation = useMutation({
     mutationFn: () =>
-      apiClient.patch(`₹{ENDPOINTS.ORDER_DETAIL(orderId)}/cancel`),
+      apiClient.patch(`${ENDPOINTS.ORDER_DETAIL(orderId)}/cancel`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });

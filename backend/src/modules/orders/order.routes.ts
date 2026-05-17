@@ -10,6 +10,9 @@ router.get('/admin/all', AuthMiddleware.restrictTo('admin'), OrderController.adm
 router.get('/', OrderController.getOrders);
 router.get('/:id', OrderController.getOrder);
 router.post('/', OrderController.createOrder);
+router.patch('/:id/cancel', OrderController.cancelOrder);
 router.patch('/:id/status', AuthMiddleware.restrictTo('admin'), OrderController.updateStatus);
+router.post('/:id/return', OrderController.requestReturn);
+router.patch('/:id/return/resolve', AuthMiddleware.restrictTo('admin'), OrderController.resolveReturn);
 
 export const orderRoutes = router;

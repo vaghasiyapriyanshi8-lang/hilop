@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
@@ -150,7 +150,7 @@ export default function FeaturesPage() {
                 transition={{ delay: index * 0.05 }}
                 viewport={{ once: true }}
               >
-                <div className={`inline-flex p-3 rounded-xl mb-5 ₹{feature.color}`}>
+                <div className={`inline-flex p-3 rounded-xl mb-5 ${feature.color}`}>
                   <feature.icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
@@ -191,7 +191,7 @@ export default function FeaturesPage() {
             {SPECS.map((spec, index) => (
               <div
                 key={spec.label}
-                className={`flex items-center justify-between px-6 py-4 ₹{index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
+                className={`flex items-center justify-between px-6 py-4 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
               >
                 <span className="text-sm font-semibold text-gray-600">{spec.label}</span>
                 <span className="text-sm font-bold text-gray-900">{spec.value}</span>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { ArrowRight, Watch } from 'lucide-react'
 import api from '@/lib/api'
@@ -24,6 +25,10 @@ export function Categories() {
       .catch(() => {})
   }, [])
 
+  const visibleCount = 4
+  const visibleCategories = categories.slice(0, visibleCount)
+  const hasMore = categories.length > visibleCount
+
   return (
     <section className="bg-gray-50 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -34,39 +39,42 @@ export function Categories() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2 className="mb-3 text-3xl font-bold sm:text-4xl">Shop by Category</h2>
+          <h2 className="mb-3 text-3xl font-bold sm:text-4xl">Collections</h2>
           <p className="text-sm leading-6 text-gray-600 sm:text-base">
-            Find the perfect watch for every moment and lifestyle.
+            Explore curated collections — discover watches organized by style, function, and craftsmanship.
           </p>
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
+          className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ staggerChildren: 0.1 }}
           viewport={{ once: true }}
         >
-          {categories.map((category, index) => (
+          {visibleCategories.map((category, index) => (
             <motion.div
               key={category.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.06 }}
               viewport={{ once: true }}
             >
-              <Link href={`/products?category=₹{category.slug}`}>
-                <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.3 }}>
-                  <Card className="group h-full cursor-pointer p-5 transition-all hover:-translate-y-1 hover:border-hilop-green/40 hover:shadow-xl sm:p-6">
-                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-hilop-green/10 text-hilop-green">
-                      <Watch className="h-6 w-6" />
+              <Link href={`/products?category=${category.slug}`}>
+                <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
+                  <Card className="group cursor-pointer p-5 sm:p-6 flex h-64 sm:h-72 md:h-80 flex-col justify-between transition-all hover:-translate-y-1 hover:border-hilop-green/40 hover:shadow-xl">
+                    <div>
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-hilop-green/10 text-hilop-green">
+                        <Watch className="h-6 w-6" />
+                      </div>
+                      <h3 className="mb-2 text-lg font-bold sm:text-xl">{category.name}</h3>
+                      <p className="text-sm leading-6 text-gray-600 line-clamp-3 min-h-[56px]">
+                        {category.description}
+                      </p>
                     </div>
-                    <h3 className="mb-2 text-lg font-bold sm:text-xl">{category.name}</h3>
-                    <p className="min-h-10 text-sm leading-6 text-gray-600">
-                      {category.description}
-                    </p>
-                    <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-hilop-green">
-                      Explore
+
+                    <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-hilop-green">
+                      View Collection
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </div>
                   </Card>
@@ -75,6 +83,26 @@ export function Categories() {
             </motion.div>
           ))}
         </motion.div>
+
+        {hasMore && (
+          <motion.div
+            className="mt-12 flex justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            <Link href="/collections">
+              <Button 
+                size="lg" 
+                className="bg-hilop-green hover:bg-hilop-green/90 text-black font-bold h-12 px-10 rounded-full shadow-lg hover:shadow-hilop-green/20 transition-all flex items-center gap-2"
+              >
+                View All Collections
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
+          </motion.div>
+        )}
       </div>
     </section>
   )

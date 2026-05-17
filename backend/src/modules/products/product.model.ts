@@ -13,13 +13,12 @@ export interface ProductDocument extends Document {
   variants: Array<{ name: string; options: string }>;
   images: string[];
   features: string[];
-  specs: Record<string, string>;
+  specs: Array<{ key: string; value: string }>;
   brand?: string;
   salePrice?: number;
   rating: number;
   reviewsCount: number;
   inventory: number;
-  isFeatured: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,7 +34,7 @@ const variantSchema = new Schema(
 const productSchema = new Schema<ProductDocument>(
   {
     name: { type: String, required: true, trim: true, text: true },
-    slug: { type: String, required: true, unique: true, index: true },
+    slug: { type: String, unique: true, sparse: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
     oldPrice: { type: Number },
@@ -46,18 +45,20 @@ const productSchema = new Schema<ProductDocument>(
     variants: { type: [variantSchema], default: [] },
     images: { type: [String], default: [] },
     features: { type: [String], default: [] },
-    specs: { type: Object, default: {} },
+    specs: [{
+      key: String,
+      value: String
+    }],
     brand: { type: String, index: true },
     salePrice: { type: Number },
     rating: { type: Number, default: 0 },
     reviewsCount: { type: Number, default: 0 },
     inventory: { type: Number, default: 0, index: true },
-    isFeatured: { type: Boolean, default: false },
+    
   },
   { timestamps: true }
 );
 
 productSchema.index({ name: 'text', description: 'text', brand: 'text', category: 'text' });
-productSchema.index({ isFeatured: 1, inventory: 1 });
 
 export const ProductModel = model<ProductDocument>('Product', productSchema);

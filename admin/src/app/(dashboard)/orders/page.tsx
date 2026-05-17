@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { orderService } from '@/services/orderService';
 import { 
   Search, 
@@ -16,20 +16,34 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { cn } from '@/utils/cn';
+import { toast } from 'sonner';
 
 export default function OrdersPage() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState('all');
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ['orders', page, status],
-    queryFn: () => orderService.getOrders(),
+    queryFn: () => orderService.getOrders(page, 10, status === 'all' ? undefined : status),
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: (vars: { orderId: string; newStatus: string }) => 
+      orderService.updateOrderStatus(vars.orderId, vars.newStatus),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders', page, status] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      toast.success('Order status updated');
+    },
+    onError: () => {
+      toast.error('Failed to update order status');
+    },
   });
 
   const orders = data?.data || [];
-  const filteredOrders = status === 'all' 
-    ? orders 
-    : orders.filter((o: any) => o.status === status);
+  const total = data?.total || 0;
+  const hasMore = data?.hasMore || false;
 
   return (
     <div className="space-y-6">
@@ -48,7 +62,7 @@ export default function OrdersPage() {
         <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex flex-col md:flex-row md:items-center gap-4">
           <div className="flex-1 flex items-center gap-4">
              <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-                {['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((s) => (
+                {['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'].map((s) => (
                   <button
                     key={s}
                     onClick={() => setStatus(s)}
@@ -88,14 +102,15 @@ export default function OrdersPage() {
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment Method</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment Status</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {filteredOrders.map((order: any) => (
-                <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">#{order.orderId}</td>
+              {orders.map((order: any) => (
+                <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">#{order.orderNumber || order._id}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-gray-900 dark:text-white">{order.customerName}</span>
@@ -112,18 +127,35 @@ export default function OrdersPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
-                    {formatCurrency(order.amount)}
+                    {formatCurrency(order.total)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={cn(
-                      'px-2.5 py-0.5 rounded-full text-xs font-medium capitalize',
-                      order.status === 'delivered' && 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
-                      order.status === 'processing' && 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-                      order.status === 'pending' && 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-                      order.status === 'cancelled' && 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-                      order.status === 'shipped' && 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
-                    )}>
-                      {order.status}
+                    <select
+                      value={order.status}
+                      onChange={(e) => updateStatusMutation.mutate({ orderId: order._id, newStatus: e.target.value })}
+                      disabled={updateStatusMutation.isPending}
+                      className={cn(
+                        'px-2.5 py-0.5 rounded-full text-xs font-medium capitalize border-none focus:ring-2 focus:ring-offset-0 cursor-pointer',
+                        order.status === 'delivered' && 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
+                        order.status === 'processing' && 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+                        order.status === 'pending' && 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+                        order.status === 'cancelled' && 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+                        order.status === 'shipped' && 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+                        order.status === 'returned' && 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                        updateStatusMutation.isPending && 'opacity-50 cursor-not-allowed'
+                      )}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                      <option value="returned">Returned</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 capitalize">
+                      {order.paymentMethod === 'cod' ? 'Cash on Delivery' : order.paymentMethod}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -136,7 +168,7 @@ export default function OrdersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Link 
-                      href={`/orders/${order.id}`}
+                      href={`/orders/${order._id}`}
                       className="inline-flex items-center text-sm text-blue-600 hover:underline"
                     >
                       <Eye className="w-4 h-4 mr-1" />
@@ -152,7 +184,7 @@ export default function OrdersPage() {
         {/* Pagination */}
         <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Showing <span className="font-medium text-gray-900 dark:text-white">{(page - 1) * 10 + 1}</span> to <span className="font-medium text-gray-900 dark:text-white">{Math.min(page * 10, data?.total || 0)}</span> of <span className="font-medium text-gray-900 dark:text-white">{data?.total || 0}</span> orders
+            Showing <span className="font-medium text-gray-900 dark:text-white">{(page - 1) * 10 + 1}</span> to <span className="font-medium text-gray-900 dark:text-white">{Math.min(page * 10, total)}</span> of <span className="font-medium text-gray-900 dark:text-white">{total}</span> orders
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -164,7 +196,7 @@ export default function OrdersPage() {
             </button>
             <button
               onClick={() => setPage(p => p + 1)}
-              disabled={!data?.hasMore}
+              disabled={!hasMore}
               className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               <ChevronRight className="w-4 h-4" />

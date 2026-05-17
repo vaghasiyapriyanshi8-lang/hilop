@@ -12,7 +12,8 @@ import {
   ArrowDownRight,
   Clock,
   ExternalLink,
-  Loader2
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -48,6 +49,16 @@ export default function DashboardPage() {
     },
   });
 
+  // Fetch pending return requests count
+  const { data: returnRequests } = useQuery({
+    queryKey: ['return-requests-count'],
+    queryFn: async () => {
+      const response = await apiClient.get('/orders/admin/all', { params: { limit: 200 } });
+      const orders = response.data?.data || [];
+      return orders.filter((o: any) => o.returnRequest?.status === 'pending').length;
+    },
+  });
+
   const recentOrders = ordersResponse?.data || [];
   const revenueData = summary?.revenueData || [];
   const categorySales = summary?.categorySales || [];
@@ -77,6 +88,13 @@ export default function DashboardPage() {
       icon: ShoppingCart,
       color: 'amber',
     },
+    {
+      name: 'Pending Returns',
+      value: returnRequests ?? null,
+      icon: RefreshCw,
+      color: 'red',
+      href: '/returns',
+    },
   ];
 
   return (
@@ -87,7 +105,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {stats.map((stat) => (
           <div key={stat.name} className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
             <div className={cn(
@@ -95,7 +113,8 @@ export default function DashboardPage() {
               stat.color === 'blue' && 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
               stat.color === 'purple' && 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400',
               stat.color === 'emerald' && 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400',
-              stat.color === 'amber' && 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400'
+              stat.color === 'amber' && 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400',
+              stat.color === 'red' && 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400',
             )}>
               <stat.icon className="w-6 h-6" />
             </div>
@@ -108,6 +127,9 @@ export default function DashboardPage() {
                   <span className="text-gray-400 dark:text-gray-500">Loading...</span>
                 )}
               </h3>
+              {(stat as any).href && (
+                <Link href={(stat as any).href} className="text-xs text-blue-600 hover:underline mt-1 inline-block">View all →</Link>
+              )}
             </div>
           </div>
         ))}
@@ -200,6 +222,7 @@ export default function DashboardPage() {
                     axisLine={false} 
                     tickLine={false} 
                     tick={{ fontSize: 12, fill: '#6b7280' }}
+                    tickFormatter={(value) => `₹${value}`}
                   />
                   <Tooltip 
                      contentStyle={{ 
@@ -208,6 +231,7 @@ export default function DashboardPage() {
                       borderRadius: '8px',
                       color: '#fff'
                     }}
+                    formatter={(value: any) => [formatCurrency(value), 'Sales']}
                   />
                   <Bar dataKey="sales" radius={[4, 4, 0, 0]}>
                     {categorySales.map((entry: any, index: number) => (
@@ -263,7 +287,7 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">Amount</p>
-                    <p>{order.amount ? formatCurrency(order.amount) : 'N/A'}</p>
+                    <p>{order.total ? formatCurrency(order.total) : 'N/A'}</p>
                   </div>
                   <div className="col-span-2">
                     <p className="font-medium text-gray-900 dark:text-white">Date</p>
@@ -319,7 +343,7 @@ export default function DashboardPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white font-semibold">
-                        {order.amount ? formatCurrency(order.amount) : 'N/A'}
+                        {order.total ? formatCurrency(order.total) : 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex items-center">

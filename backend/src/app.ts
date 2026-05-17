@@ -15,6 +15,8 @@ import { productRoutes } from './modules/products/product.routes';
 import { orderRoutes } from './modules/orders/order.routes';
 import { paymentRoutes } from './modules/payments/payment.routes';
 import { analyticsRoutes } from './modules/analytics/analytics.routes';
+import { reviewRoutes } from './modules/reviews/review.routes';
+import { contactRoutes } from './modules/contact/contact.routes';
 
 const logger = createLogger('app');
 
@@ -23,6 +25,7 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: config.corsOrigins, credentials: true }));
+
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 app.use(cookieParser());
@@ -46,6 +49,8 @@ app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
+app.use('/api/v1/contact', contactRoutes);
 
 app.get('/', (_req, res) => res.status(200).json({ status: 'Hilop backend is running', timestamp: new Date().toISOString() }));
 app.get('/health', (_req, res) => res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() }));

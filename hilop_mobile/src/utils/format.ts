@@ -3,5 +3,5 @@ export const formatPrice = (price: number): string => {
 };
 
 export const formatCurrency = (amount: number): string => {
-  return `₹₹{formatPrice(amount)}`;
+  return `₹${formatPrice(amount)}`;
 };

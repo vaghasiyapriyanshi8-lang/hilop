@@ -1,8 +1,28 @@
 import { OrderModel } from '../orders/order.model';
 import { UserModel } from '../users/user.model';
 import { ProductModel } from '../products/product.model';
+import { ReviewModel } from '../reviews/review.model';
 
 export class AnalyticsService {
+  // Public stats — safe to expose without auth
+  static async publicStats() {
+    const [totalOrders, totalUsers, totalProducts, totalReviews, avgRatingResult] = await Promise.all([
+      OrderModel.countDocuments({ paymentStatus: 'paid' }),
+      UserModel.countDocuments(),
+      ProductModel.countDocuments({ status: { $ne: 'archived' } }),
+      ReviewModel.countDocuments({ isApproved: true }),
+      ReviewModel.aggregate([
+        { $match: { isApproved: true } },
+        { $group: { _id: null, avg: { $avg: '$rating' } } },
+      ]),
+    ]);
+
+    const avgRating = avgRatingResult[0]?.avg
+      ? Number(avgRatingResult[0].avg.toFixed(1))
+      : 4.9;
+
+    return { totalOrders, totalUsers, totalProducts, totalReviews, avgRating };
+  }
   static async overview() {
     const totalOrders = await OrderModel.countDocuments();
     const totalUsers = await UserModel.countDocuments();
@@ -72,7 +92,10 @@ export class AnalyticsService {
       conversionRate,
       revenueData,
       topSellingCategories: categorySalesPipeline.map((item) => item.category),
-      categorySales: categorySalesPipeline.map((item) => ({ category: item.category, sales: item.revenue })),
+      categorySales: categorySalesPipeline.map((item) => ({ 
+        category: item.category ? item.category.charAt(0).toUpperCase() + item.category.slice(1) : 'Uncategorized', 
+        sales: item.revenue 
+      })),
     };
   }
 }

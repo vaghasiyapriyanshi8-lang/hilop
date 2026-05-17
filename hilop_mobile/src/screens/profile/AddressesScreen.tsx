@@ -159,7 +159,7 @@ export default function AddressesScreen({ navigation }: Props) {
   const saveMutation = useMutation({
     mutationFn: (addr: Partial<Address>) =>
       addr._id
-        ? apiClient.put(`₹{ENDPOINTS.ADDRESSES}/₹{addr._id}`, addr).then(r => r.data)
+        ? apiClient.put(`${ENDPOINTS.ADDRESSES}/${addr._id}`, addr).then(r => r.data)
         : apiClient.post(ENDPOINTS.ADDRESSES, addr).then(r => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] });
@@ -172,7 +172,7 @@ export default function AddressesScreen({ navigation }: Props) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) =>
-      apiClient.delete(`₹{ENDPOINTS.ADDRESSES}/₹{id}`).then(r => r.data),
+      apiClient.delete(`${ENDPOINTS.ADDRESSES}/${id}`).then(r => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] });
     },
@@ -183,7 +183,7 @@ export default function AddressesScreen({ navigation }: Props) {
 
   const defaultMutation = useMutation({
     mutationFn: (id: string) =>
-      apiClient.patch(`₹{ENDPOINTS.ADDRESSES}/₹{id}/default`).then(r => r.data),
+      apiClient.patch(`${ENDPOINTS.ADDRESSES}/${id}/default`).then(r => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] });
     },

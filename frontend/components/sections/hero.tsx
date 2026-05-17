@@ -21,7 +21,7 @@ export function Hero() {
   }, [])
 
   return (
-    <section className="relative min-h-[640px] overflow-hidden bg-black sm:min-h-[700px]">
+    <section className="relative min-h-[480px] overflow-hidden bg-black sm:min-h-[640px] md:min-h-[700px]">
       <Image
         src="/images/watch-hero.svg"
         alt="Luxury Hilop watch"
@@ -31,7 +31,7 @@ export function Hero() {
       />
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.88),rgba(0,0,0,.58),rgba(0,0,0,.2))]" />
 
-      <div className="relative mx-auto flex min-h-[640px] max-w-7xl items-center px-4 py-20 sm:min-h-[700px] sm:px-6 lg:px-8">
+      <div className="relative mx-auto flex items-center min-h-[480px] md:min-h-[640px] max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <motion.div
           className="max-w-2xl"
           initial={{ opacity: 0, y: 20 }}
@@ -51,7 +51,7 @@ export function Hero() {
          
 
           <motion.h1
-            className="mb-6 max-w-xl text-4xl font-bold leading-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
+            className="mb-6 max-w-xl text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -110,14 +110,6 @@ export function Hero() {
             </div>
           </motion.div>
 
-          <motion.div
-            className="mt-8 text-xs text-gray-400"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            Last updated: {lastUpdated} IST
-          </motion.div>
         </motion.div>
       </div>
     </section>

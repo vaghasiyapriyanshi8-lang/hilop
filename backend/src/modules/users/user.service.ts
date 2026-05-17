@@ -4,7 +4,9 @@ import { sendEmail } from '../../utils/email';
 
 export class UserService {
   static async findById(id: string) {
-    return UserModel.findById(id).lean();
+    const user = await UserModel.findById(id).lean();
+    if (!user) return null;
+    return { ...user, id: user._id.toString() };
   }
 
   static async list(page = 1, pageSize = 20, search = '', role = '', isBlocked?: boolean) {
@@ -33,7 +35,9 @@ export class UserService {
   }
 
   static async updateProfile(userId: string, payload: Partial<UserDocument>) {
-    return UserModel.findByIdAndUpdate(userId, payload, { new: true, runValidators: true }).lean();
+    const user = await UserModel.findByIdAndUpdate(userId, payload, { new: true, runValidators: true }).lean();
+    if (!user) return null;
+    return { ...user, id: user._id.toString() };
   }
 
   static async setBlocked(userId: string, blocked: boolean) {

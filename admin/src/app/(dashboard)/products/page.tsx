@@ -9,7 +9,6 @@ import {
   MoreVertical,
   Edit,
   Trash2,
-  Eye,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
@@ -165,12 +164,7 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <Link
-                          href={`/products/${productId}`}
-                          className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Link>
+                        {/* view icon removed per request */}
                         <Link
                           href={`/products/edit/${productId}`}
                           className="p-1 text-gray-400 hover:text-emerald-600 transition-colors"

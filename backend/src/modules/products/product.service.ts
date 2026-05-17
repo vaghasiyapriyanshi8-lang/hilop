@@ -78,32 +78,5 @@ export class ProductService {
       slug: cat,
     }));
   }
-
-  static async getFeatured(query: { limit?: number } = {}) {
-    const limit = query.limit ?? 8;
-    const filter: FilterQuery<ProductDocument> = { status: 'active', isFeatured: true };
-
-    const products = await ProductModel.find(filter)
-      .sort({ createdAt: -1 as const })
-      .limit(limit)
-      .lean();
-
-    return { products, count: products.length };
-  }
-
-  static async getFeaturedList(query: { page?: number; limit?: number } = {}) {
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 24;
-    const filter: FilterQuery<ProductDocument> = { isFeatured: true };
-
-    const products = await ProductModel.find(filter)
-      .sort({ createdAt: -1 as const })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean();
-
-    const count = await ProductModel.countDocuments(filter);
-
-    return { products, count, page, limit };
-  }
+  // Featured-related service helpers removed
 }

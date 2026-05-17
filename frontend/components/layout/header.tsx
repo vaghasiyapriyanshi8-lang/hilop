@@ -3,10 +3,11 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Menu, ShoppingBag, User, X } from 'lucide-react'
+import { Heart, Menu, ShoppingBag, User, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/auth'
 import { useCartStore } from '@/store/cart'
+import { useWishlistStore } from '@/store/wishlist'
 
 const baseNavItems = [
   { href: '/products', label: 'Products' },
@@ -25,6 +26,7 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { isAuthenticated } = useAuthStore()
   const { itemCount } = useCartStore()
+  const wishlistCount = useWishlistStore((state) => state.items.length)
 
   const getNavItems = () => {
     return [...baseNavItems, ...(isAuthenticated ? authenticatedNavItems : []), ...allNavItems]
@@ -54,6 +56,17 @@ export function Header() {
           </nav>
 
           <div className="flex items-center justify-end gap-2 sm:gap-3">
+
+            <Button asChild variant="ghost" size="icon" className="relative" aria-label="Wishlist">
+              <Link href="/wishlist">
+                <Heart className="h-5 w-5" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+            </Button>
 
             <Button asChild variant="ghost" size="icon" className="relative" aria-label="Cart">
               <Link href="/cart">

@@ -10,6 +10,7 @@ export interface SignupData {
   name: string
   email: string
   password: string
+  phone?: string
 }
 
 export interface VerifyOtpData {
@@ -29,6 +30,11 @@ export interface ResetPasswordData {
 export const authService = {
   async login(data: LoginData): Promise<{ user: User; tokens: AuthTokens }> {
     const response = await api.post('/auth/login', data)
+    return response.data
+  },
+
+  async googleLogin(data: { idToken?: string; accessToken?: string }): Promise<{ user: User; tokens: AuthTokens }> {
+    const response = await api.post('/auth/google-login', data)
     return response.data
   },
 
@@ -63,6 +69,11 @@ export const authService = {
 
   async getCurrentUser(): Promise<User> {
     const response = await api.get('/users/me')
+    return response.data.data
+  },
+
+  async updateProfile(data: Partial<User>): Promise<User> {
+    const response = await api.patch('/users/me', data)
     return response.data.data
   },
 }

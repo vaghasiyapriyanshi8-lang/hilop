@@ -1,4 +1,4 @@
-import api from '@/lib/api'
+﻿import api from '@/lib/api'
 import { Product, ApiResponse, SearchFilters } from '@/types'
 
 export interface ProductsResponse extends ApiResponse<Product[]> {
@@ -29,9 +29,28 @@ interface BackendProductsResponse {
   pagination?: ProductsResponse['pagination']
 }
 
+function specsArrayToRecord(specs?: Array<{ key: string; value: string }> | Record<string, string>) {
+  if (!specs) return {}
+  if (!Array.isArray(specs)) return specs
+
+  return specs.reduce<Record<string, string>>((acc, spec) => {
+    if (spec?.key) acc[spec.key] = spec.value
+    return acc
+  }, {})
+}
+
+function specsRecordToArray(specs?: Record<string, string> | Array<{ key: string; value: string }>) {
+  if (!specs) return []
+  if (Array.isArray(specs)) return specs
+
+  return Object.entries(specs).map(([key, value]) => ({ key, value }))
+}
+
 function normalizeProduct(product: BackendProduct): Product {
   const stockQuantity = product.stockQuantity ?? product.stock ?? product.inventory ?? 0
   const originalPrice = product.originalPrice ?? product.oldPrice
+  const specifications = specsArrayToRecord(product.specifications || product.specs || {})
+  const specs = specsRecordToArray(product.specs || product.specifications || {})
 
   return {
     ...product,
@@ -40,7 +59,8 @@ function normalizeProduct(product: BackendProduct): Product {
     price: product.salePrice ?? product.price,
     images: product.images || [],
     brand: product.brand || 'Hilop',
-    specifications: product.specifications || product.specs || {},
+    specifications,
+    specs,
     rating: product.rating || 0,
     reviewCount: product.reviewCount ?? product.reviewsCount ?? 0,
     inStock: product.inStock ?? stockQuantity > 0,
@@ -88,7 +108,7 @@ export const productsService = {
   },
 
   async getProduct(slug: string): Promise<Product> {
-    const response = await api.get(`/products/₹{slug}`)
+    const response = await api.get(`/products/${slug}`)
     return normalizeProduct(response.data.data)
   },
 

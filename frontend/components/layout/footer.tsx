@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Shield, Award, RefreshCw, Truck } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -8,11 +9,20 @@ import { Button } from '@/components/ui/button'
 const TRUST_BADGES = [
   { icon: Shield, label: '2-Year Warranty', sub: 'On every watch' },
   { icon: Truck, label: 'Free Shipping', sub: 'Orders over ₹29' },
-  { icon: RefreshCw, label: '30-Day Returns', sub: 'Hassle-free policy' },
+  { icon: RefreshCw, label: '7-Day Returns', sub: 'Hassle-free policy' },
   { icon: Award, label: 'Certified Authentic', sub: '100% genuine products' },
 ]
 
 export function Footer() {
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
+
+  const handleSubscribe = () => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return
+    setSubscribed(true)
+    setEmail('')
+    setTimeout(() => setSubscribed(false), 4000)
+  }
   return (
     <footer className="bg-black text-white mt-20">
 
@@ -109,12 +119,18 @@ export function Footer() {
               <Input
                 type="email"
                 placeholder="Your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
                 className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-hilop-green"
               />
-              <Button size="icon" className="bg-hilop-green hover:bg-hilop-green/90 flex-shrink-0">
+              <Button size="icon" onClick={handleSubscribe} className="bg-hilop-green hover:bg-hilop-green/90 flex-shrink-0">
                 <Mail className="w-4 h-4 text-black" />
               </Button>
             </div>
+            {subscribed && (
+              <p className="text-xs text-hilop-green mb-2">✓ You're subscribed! Thank you.</p>
+            )}
             <p className="text-xs text-gray-500">No spam. Unsubscribe anytime.</p>
           </div>
         </div>
@@ -134,7 +150,7 @@ export function Footer() {
               <Mail className="w-5 h-5 text-hilop-green flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-semibold mb-0.5">Email Us</p>
-                <p className="text-gray-400 text-sm">support@hilop.com</p>
+                <Link href="/contact?subject=Support+Enquiry" className="text-gray-400 hover:text-hilop-green transition-colors text-sm">support@hilop.com</Link>
                 <p className="text-gray-500 text-xs">Response within 24 hours</p>
               </div>
             </div>

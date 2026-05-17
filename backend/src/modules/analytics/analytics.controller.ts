@@ -6,4 +6,9 @@ export class AnalyticsController {
     const metrics = await AnalyticsService.overview();
     res.status(200).json({ data: metrics });
   }
+
+  static async publicStats(_req: Request, res: Response) {
+    const stats = await AnalyticsService.publicStats();
+    res.status(200).json({ data: stats });
+  }
 }

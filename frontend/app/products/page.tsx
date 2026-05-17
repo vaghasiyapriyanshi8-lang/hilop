@@ -1,26 +1,28 @@
-'use client'
+"use client"
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Sliders, ArrowUpDown, Heart, Eye, Loader2, Star } from 'lucide-react'
+import { Sliders, ArrowUpDown, Eye, Loader2, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import Image from 'next/image'
 import Link from 'next/link'
 import { productsService } from '@/services/api/products'
+import { useSearchParams } from 'next/navigation'
 import { Product } from '@/types'
+import { AddToCartButton } from '@/components/cart/add-to-cart-button'
+import { WishlistToggleButton } from '@/components/wishlist/wishlist-toggle-button'
 
 function ProductCard({ product }: { product: Product }) {
-  const [isWishlisted, setIsWishlisted] = useState(false)
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
 
   return (
-    <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.3 }}>
-      <Card className="overflow-hidden group">
-        <div className="relative h-64 overflow-hidden bg-gray-100">
+    <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.3 }} className="h-full">
+      <Card className="overflow-hidden group flex flex-col h-full">
+        <div className="relative h-64 overflow-hidden bg-gray-100 shrink-0">
           <Image
             src={product.images?.[0] || '/images/watch-elegance.svg'}
             alt={product.name}
@@ -28,43 +30,36 @@ function ProductCard({ product }: { product: Product }) {
             className="object-cover group-hover:scale-110 transition-transform duration-300"
           />
           {discount > 0 && (
-            <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
               -{discount}%
             </div>
           )}
           <motion.div
-            className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center gap-3"
+            className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center gap-3 z-20"
             initial={{ opacity: 0 }}
             whileHover={{ opacity: 1 }}
           >
-            <Button
-              size="icon"
-              variant="secondary"
-              className="rounded-full"
-              onClick={() => setIsWishlisted(!isWishlisted)}
-            >
-              <Heart className={`w-5 h-5 ₹{isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
-            </Button>
+            <WishlistToggleButton product={product} />
             <Button
               asChild
               size="icon"
               className="rounded-full bg-hilop-green hover:bg-hilop-green/90"
             >
-              <Link href={`/products/₹{product.slug || product.id}`}>
+              <Link href={`/products/${product.slug || product.id}`}>
                 <Eye className="w-5 h-5 text-white" />
               </Link>
             </Button>
           </motion.div>
         </div>
-        <div className="p-4">
-          <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{product.brand}</div>
-          <h3 className="font-semibold text-lg mb-2 line-clamp-2">{product.name}</h3>
+        <div className="p-4 flex flex-col flex-1">
+          <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">{product.brand || 'HILOP'}</div>
+          <h3 className="font-semibold text-lg mb-2 line-clamp-2 min-h-[3.5rem]">{product.name}</h3>
           <div className="flex items-center gap-2 mb-3">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-4 w-4 ₹{
+                  className={`h-4 w-4 ${
                     i < Math.floor(product.rating || 0)
                       ? 'fill-yellow-400 text-yellow-400'
                       : 'fill-gray-200 text-gray-200'
@@ -74,21 +69,24 @@ function ProductCard({ product }: { product: Product }) {
             </div>
             <span className="text-sm text-gray-500">({product.reviewCount || 0})</span>
           </div>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4 mt-auto">
             <span className="text-xl font-bold text-hilop-green">₹{product.price.toLocaleString()}</span>
             {product.originalPrice && (
               <span className="text-sm text-gray-400 line-through">₹{product.originalPrice.toLocaleString()}</span>
             )}
           </div>
-          <Button
-            asChild
-            variant="outline"
-            className="w-full hover:bg-hilop-green hover:text-white hover:border-hilop-green"
-          >
-            <Link href={`/products/₹{product.slug || product.id}`}>
-              View Details
-            </Link>
-          </Button>
+          <div className="space-y-2 mt-auto">
+            <Button
+              asChild
+              variant="outline"
+              className="w-full hover:bg-hilop-green hover:text-white hover:border-hilop-green"
+            >
+              <Link href={`/products/${product.slug || product.id}`}>
+                View Details
+              </Link>
+            </Button>
+            <AddToCartButton product={product} variant="default" className="bg-hilop-green text-black hover:bg-hilop-green/90" />
+          </div>
         </div>
       </Card>
     </motion.div>
@@ -96,11 +94,17 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams()
+  const categorySlug = searchParams?.get('category') || ''
+
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('trending')
   const [showFilters, setShowFilters] = useState(false)
+  const [showAll, setShowAll] = useState(false)
+
+  const [selectedCategoryName, setSelectedCategoryName] = useState('')
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -108,6 +112,7 @@ export default function ProductsPage() {
       try {
         const response = await productsService.getProducts({
           search: searchQuery,
+          category: categorySlug || undefined,
           sort:
             sortBy === 'price-low'
               ? 'price_asc'
@@ -128,7 +133,28 @@ export default function ProductsPage() {
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [searchQuery, sortBy])
+  }, [searchQuery, sortBy, categorySlug])
+
+  useEffect(() => {
+    if (!categorySlug) {
+      setSelectedCategoryName('')
+      return
+    }
+
+    let mounted = true
+    ;(async () => {
+      try {
+        const list = await productsService.getCategories()
+        if (!mounted) return
+        const found = list.find((c: any) => c.slug === categorySlug)
+        setSelectedCategoryName(found?.name || '')
+      } catch (err) {
+        console.error(err)
+      }
+    })()
+
+    return () => { mounted = false }
+  }, [categorySlug])
 
   return (
     <div className="min-h-screen">
@@ -139,8 +165,8 @@ export default function ProductsPage() {
         animate={{ opacity: 1 }}
       >
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Our Collection</h1>
-          <p className="text-gray-600">Explore our complete range of luxury watches</p>
+          <h1 className="text-4xl font-bold mb-2">{selectedCategoryName || 'Collections'}</h1>
+          <p className="text-gray-600">{selectedCategoryName ? `Products in ${selectedCategoryName}` : 'Explore our complete range of luxury watches'}</p>
         </div>
       </motion.section>
 
@@ -156,7 +182,7 @@ export default function ProductsPage() {
             {/* Search */}
             <Input
               type="search"
-              placeholder="Search products..."
+              placeholder="Search by model, brand, or reference"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full md:w-64"
@@ -195,11 +221,61 @@ export default function ProductsPage() {
             </span>
           </motion.div>
 
+          {/* Filter Panel */}
+          {showFilters && (
+            <motion.div
+              className="mb-6 p-4 border border-gray-200 rounded-xl bg-gray-50 grid grid-cols-2 sm:grid-cols-4 gap-4"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+            >
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Price Range</p>
+                <div className="space-y-1">
+                  {['Under ₹5,000', '₹5,000 – ₹15,000', '₹15,000 – ₹50,000', 'Above ₹50,000'].map((r) => (
+                    <label key={r} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                      <input type="checkbox" className="accent-hilop-green" />{r}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Rating</p>
+                <div className="space-y-1">
+                  {['4★ & above', '3★ & above', '2★ & above'].map((r) => (
+                    <label key={r} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                      <input type="checkbox" className="accent-hilop-green" />{r}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Availability</p>
+                <div className="space-y-1">
+                  {['In Stock', 'Out of Stock'].map((r) => (
+                    <label key={r} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                      <input type="checkbox" className="accent-hilop-green" />{r}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Discount</p>
+                <div className="space-y-1">
+                  {['10% or more', '25% or more', '50% or more'].map((r) => (
+                    <label key={r} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                      <input type="checkbox" className="accent-hilop-green" />{r}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Loading State */}
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-4">
               <Loader2 className="w-10 h-10 animate-spin text-hilop-green" />
-              <p className="text-gray-500">Loading collection...</p>
+              <p className="text-gray-500">Loading products...</p>
             </div>
           ) : (
             <>
@@ -210,7 +286,9 @@ export default function ProductsPage() {
                 animate={{ opacity: 1 }}
                 transition={{ staggerChildren: 0.05 }}
               >
-                {products.map((product, index) => (
+                {(
+                  showAll ? products : products.slice(0, 8)
+                ).map((product, index) => (
                   <motion.div
                     key={product.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -222,14 +300,22 @@ export default function ProductsPage() {
                 ))}
               </motion.div>
 
+              {products.length > 8 && (
+                <div className="flex justify-center mt-6">
+                  <Button onClick={() => setShowAll((s) => !s)} className="px-6">
+                    {showAll ? 'Show Fewer Products' : 'View All Products'}
+                  </Button>
+                </div>
+              )}
+
               {/* Empty State */}
-              {products.length === 0 && (
+                  {products.length === 0 && (
                 <motion.div
                   className="text-center py-20"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  <p className="text-gray-500 text-lg">No products found</p>
+                      <p className="text-gray-500 text-lg">No products found for this search or category.</p>
                 </motion.div>
               )}
             </>

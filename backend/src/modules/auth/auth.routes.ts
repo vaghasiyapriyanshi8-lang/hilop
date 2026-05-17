@@ -15,6 +15,7 @@ const asyncHandler =
 router.post('/signup', validateBody(authSchemas.signup), asyncHandler(AuthController.signup));
 router.post('/register', validateBody(authSchemas.signup), asyncHandler(AuthController.signup));
 router.post('/login', validateBody(authSchemas.login), asyncHandler(AuthController.login));
+router.post('/google-login', asyncHandler(AuthController.googleLogin));
 router.post('/refresh', asyncHandler(AuthController.refreshToken));
 router.post('/logout', asyncHandler(AuthController.logout));
 router.post('/verify-otp', validateBody(authSchemas.verifyOtp), asyncHandler(AuthController.verifyOtp));

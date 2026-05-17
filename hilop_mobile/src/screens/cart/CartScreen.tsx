@@ -239,7 +239,7 @@ export default function CartScreen({ navigation }: Props) {
         cartTotal: subtotal,
       });
       setCouponDiscount(data.discount);
-      Alert.alert('Success', `Coupon applied! You saved ₹{formatCurrency(data.discount)}`);
+      Alert.alert('Success', `Coupon applied! You saved ₹${formatCurrency(data.discount)}`);
     } catch (error: any) {
       Alert.alert('Invalid Coupon', error.response?.data?.message ?? 'Coupon not valid');
     } finally {
@@ -309,9 +309,9 @@ export default function CartScreen({ navigation }: Props) {
             onIncrement={() => handleIncrement(item)}
             onDecrement={() => handleDecrement(item)}
             onRemove={() => {
-              Alert.alert(
+                Alert.alert(
                 'Remove Item',
-                `Remove ₹{item.product.name} from cart?`,
+                `Remove ${item.product.name} from cart?`,
                 [
                   { text: 'Cancel', style: 'cancel' },
                   {

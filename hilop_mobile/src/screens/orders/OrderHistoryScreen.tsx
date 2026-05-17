@@ -102,7 +102,7 @@ export default function OrderHistoryScreen({ navigation }: Props) {
     queryFn: () => apiClient.get(ENDPOINTS.ORDERS).then(r => r.data),
   });
 
-  const allOrders: Order[] = data?.orders ?? [];
+  const allOrders: Order[] = data?.data ?? [];
   const filtered = activeFilter === 'All'
     ? allOrders
     : allOrders.filter(o => o.status.toLowerCase() === activeFilter.toLowerCase());

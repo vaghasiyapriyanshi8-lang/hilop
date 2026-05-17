@@ -40,7 +40,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
         <Text style={styles.title}>Reset Password</Text>
         <Text style={styles.subtitle}>
           {sent
-            ? `We've sent an OTP to ₹{email}. Check your inbox.`
+            ? `We've sent an OTP to ${email}. Check your inbox.`
             : 'Enter your email and we\'ll send you an OTP to reset your password.'}
         </Text>
 

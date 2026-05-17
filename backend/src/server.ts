@@ -6,6 +6,7 @@ import { connectMongo } from './utils/mongo';
 import { connectRedis } from './utils/redis';
 import { createLogger } from './core/logger';
 import { attachSocketHandlers } from './sockets/socket';
+import { createAdminUser } from './modules/auth/auth.service';
 
 const logger = createLogger('server');
 
@@ -19,6 +20,11 @@ attachSocketHandlers(io);
 const start = async () => {
   await connectMongo(config.mongoUri);
   await connectRedis(config.redisUri);
+
+  // Ensure the admin user is created on server startup
+  createAdminUser().catch((error) => {
+    console.error('Error creating admin user:', error);
+  });
 
   httpServer.listen(config.port, () => {
     logger.info(`Hilop backend running on port ${config.port}`);

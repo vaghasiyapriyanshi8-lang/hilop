@@ -23,6 +23,15 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { cn } from '@/utils/cn';
 
+function appendFormValue(formData: FormData, key: string, value: unknown) {
+  if (value === undefined || value === null) return;
+  if (key === 'variants' || key === 'specs') {
+    formData.append(key, JSON.stringify(value));
+    return;
+  }
+  formData.append(key, String(value));
+}
+
 const productSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
@@ -32,6 +41,10 @@ const productSchema = z.object({
   stock: z.number().min(0, 'Stock must be at least 0'),
   sku: z.string().min(3, 'SKU is required'),
   status: z.enum(['active', 'draft', 'archived']).default('active'),
+  specs: z.array(z.object({
+    key: z.string().min(1, 'Label required'),
+    value: z.string().min(1, 'Value required'),
+  })).optional(),
   variants: z.array(z.object({
     name: z.string().min(1, 'Variant name required'),
     options: z.string().min(1, 'Options required (comma separated)'),
@@ -62,8 +75,14 @@ export default function NewProductPage() {
     resolver: zodResolver(productSchema),
     defaultValues: {
       status: 'active',
+      specs: [],
       variants: [],
     },
+  });
+
+  const { fields: specFields, append: appendSpec, remove: removeSpec } = useFieldArray({
+    control,
+    name: 'specs',
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -90,11 +109,7 @@ export default function NewProductPage() {
       if (images.length > 0) {
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
-          if (key === 'variants') {
-            formData.append(key, JSON.stringify(value));
-          } else {
-            formData.append(key, String(value));
-          }
+          appendFormValue(formData, key, value);
         });
         
         images.forEach(image => {
@@ -120,7 +135,7 @@ export default function NewProductPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link 
           href="/products"
@@ -175,6 +190,51 @@ export default function NewProductPage() {
                 />
                 {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>}
               </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800">
+              <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
+                <Layers className="w-5 h-5 text-purple-500" />
+                Product Specifications
+              </div>
+              <button
+                type="button"
+                onClick={() => appendSpec({ key: '', value: '' })}
+                className="text-xs bg-purple-50 dark:bg-purple-900/30 text-purple-600 px-3 py-1.5 rounded-lg hover:bg-purple-100 transition-colors font-medium"
+              >
+                + Add Spec
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              {specFields.length === 0 && (
+                <p className="text-sm text-gray-500 text-center py-4 italic">No specifications added yet</p>
+              )}
+              {specFields.map((field, index) => (
+                <div key={field.id} className="flex items-start gap-3 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl border border-gray-100 dark:border-gray-800">
+                  <div className="flex-1 space-y-3">
+                    <input
+                      {...register(`specs.${index}.key` as const)}
+                      placeholder="Label (e.g. Material, Movement)"
+                      className="w-full px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    />
+                    <input
+                      {...register(`specs.${index}.value` as const)}
+                      placeholder="Value (e.g. Stainless Steel, Quartz)"
+                      className="w-full px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeSpec(index)}
+                    className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 

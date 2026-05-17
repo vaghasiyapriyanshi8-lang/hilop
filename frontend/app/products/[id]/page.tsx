@@ -7,11 +7,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { useCartStore } from '@/store/cart'
 import { useToast } from '@/hooks/use-toast'
 import { productsService } from '@/services/api/products'
 import { Product } from '@/types'
-import { ChevronLeft, Heart, Loader2, RotateCcw, Share2, Shield, Star, Truck } from 'lucide-react'
+import { ChevronLeft, Loader2, RotateCcw, Share2, Shield, Star, Truck } from 'lucide-react'
+import { AddToCartButton } from '@/components/cart/add-to-cart-button'
+import { WishlistToggleButton } from '@/components/wishlist/wishlist-toggle-button'
+import { ReviewForm } from '@/components/reviews/review-form'
+import { ReviewsDisplay } from '@/components/reviews/reviews-display'
+import { useAuthStore } from '@/store/auth'
 
 const fallbackImages = ['/images/watch-elegance.svg']
 
@@ -21,32 +25,32 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
-  const [isWishlisted, setIsWishlisted] = useState(false)
-  const { addItem } = useCartStore()
+  const [reviewsKey, setReviewsKey] = useState(0)
   const { toast } = useToast()
+  const { user } = useAuthStore()
+
+  const fetchProduct = async () => {
+    if (!params.id) return
+
+    setLoading(true)
+    try {
+      const data = await productsService.getProduct(params.id)
+      setProduct(data)
+      setSelectedImage(0)
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Product not found.',
+        variant: 'destructive',
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      if (!params.id) return
-
-      setLoading(true)
-      try {
-        const data = await productsService.getProduct(params.id)
-        setProduct(data)
-        setSelectedImage(0)
-      } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'Product not found.',
-          variant: 'destructive',
-        })
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchProduct()
-  }, [params.id, toast])
+  }, [params.id])
 
   if (loading) {
     return (
@@ -73,20 +77,10 @@ export default function ProductDetailPage() {
   const discount = originalPrice
     ? Math.round(((originalPrice - product.price) / originalPrice) * 100)
     : 0
-
-  const handleAddToCart = () => {
-    addItem({
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      image: images[0],
-      quantity,
-    })
-    toast({
-      title: 'Success',
-      description: `₹{product.name} added to cart`,
-    })
-  }
+  const specificationItems =
+    product.specs?.length
+      ? product.specs
+      : Object.entries(product.specifications || {}).map(([key, value]) => ({ key, value }))
 
   return (
     <div className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
@@ -113,12 +107,12 @@ export default function ProductDetailPage() {
                   type="button"
                   suppressHydrationWarning
                   onClick={() => setSelectedImage(index)}
-                  className={`relative h-24 overflow-hidden rounded-lg border-2 transition-colors ₹{
+                  className={`relative h-24 overflow-hidden rounded-lg border-2 transition-colors ${
                     selectedImage === index ? 'border-hilop-green' : 'border-gray-200'
                   }`}
                   whileHover={{ scale: 1.05 }}
                 >
-                  <Image src={image} alt={`View ₹{index + 1}`} fill className="object-cover" />
+                  <Image src={image} alt={`View ${index + 1}`} fill className="object-cover" />
                 </motion.button>
               ))}
             </div>
@@ -138,7 +132,7 @@ export default function ProductDetailPage() {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-5 w-5 ₹{
+                      className={`h-5 w-5 ${
                         i < Math.floor(product.rating)
                           ? 'fill-yellow-400 text-yellow-400'
                           : 'text-gray-300'
@@ -169,7 +163,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
               <p className={product.inStock ? 'font-semibold text-green-600' : 'font-semibold text-red-600'}>
-                {product.inStock ? `₹{product.stockQuantity} in stock` : 'Out of stock'}
+                {product.inStock ? `${product.stockQuantity} in stock` : 'Out of stock'}
               </p>
             </div>
 
@@ -200,22 +194,13 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="flex gap-3 pt-4">
-                <Button
+                <AddToCartButton
+                  product={product}
+                  quantity={quantity}
                   size="lg"
-                  onClick={handleAddToCart}
-                  disabled={!product.inStock}
                   className="flex-1 bg-hilop-green font-semibold text-black hover:bg-hilop-green/90"
-                >
-                  Add to Cart
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setIsWishlisted(!isWishlisted)}
-                  className={isWishlisted ? 'text-red-600' : ''}
-                >
-                  <Heart className={`h-5 w-5 ₹{isWishlisted ? 'fill-red-600' : ''}`} />
-                </Button>
+                />
+                <WishlistToggleButton product={product} size="lg" variant="outline" />
                 <Button size="lg" variant="outline">
                   <Share2 className="h-5 w-5" />
                 </Button>
@@ -242,26 +227,66 @@ export default function ProductDetailPage() {
         </div>
 
         <motion.div
-          className="mt-16 border-t pt-12"
+          className="mt-20 border-t pt-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="mb-8 text-3xl font-bold">Specifications</h2>
-          <Card className="p-8">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {Object.entries(product.specifications).length ? (
-                Object.entries(product.specifications).map(([key, value]) => (
-                  <div key={key} className="flex justify-between gap-6">
-                    <span className="font-semibold text-gray-600">{key}</span>
-                    <span className="font-semibold text-gray-900">{value}</span>
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">Specifications</h2>
+            <p className="mt-2 text-gray-500">Product details and features</p>
+          </div>
+
+          {specificationItems.length > 0 ? (
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+              <div className="divide-y divide-gray-200">
+                {specificationItems.map((spec, index) => (
+                  <div key={`${spec.key}-${index}`} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors">
+                    <span className="font-medium text-gray-600">{spec.key}</span>
+                    <span className="font-semibold text-gray-900">{spec.value}</span>
                   </div>
-                ))
-              ) : (
-                <p className="text-gray-600">No specifications available.</p>
-              )}
+                ))}
+              </div>
             </div>
-          </Card>
+          ) : (
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-6 py-12 text-center">
+              <p className="text-gray-500">No specifications available for this product</p>
+            </div>
+          )}
+        </motion.div>
+
+        <motion.div
+          className="mt-20 border-t pt-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-gray-900">Customer Reviews</h2>
+            <p className="mt-2 text-gray-500">See what our customers think about this product</p>
+          </div>
+
+          {user ? (
+            <div className="mb-12">
+              <ReviewForm
+                productId={product._id}
+                onSuccess={async () => {
+                  setReviewsKey((prev) => prev + 1)
+                  await fetchProduct()
+                }}
+              />
+            </div>
+          ) : (
+            <div className="mb-12 rounded-lg border border-gray-200 bg-gray-50 px-6 py-8 text-center">
+              <p className="mb-4 text-gray-600">Please <Link href="/login" className="font-semibold text-hilop-green hover:underline">login</Link> to write a review</p>
+            </div>
+          )}
+
+          <ReviewsDisplay 
+            key={reviewsKey}
+            productId={product._id} 
+            currentUserId={user?._id}
+          />
         </motion.div>
       </div>
     </div>

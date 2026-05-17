@@ -29,7 +29,7 @@ export const config = {
   mongoUri: process.env.MONGO_URI as string,
   redisUri: process.env.REDIS_URI as string,
   jwtSecret: process.env.JWT_SECRET as string,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '15m',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
   refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET as string,
   refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '30d',
   cloudinary: {

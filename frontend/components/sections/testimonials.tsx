@@ -1,62 +1,23 @@
-'use client'
+"use client"
 
 import { motion } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 import { Star, CheckCircle2 } from 'lucide-react'
 import Image from 'next/image'
-
-const testimonials = [
-  {
-    id: 1,
-    name: 'Arjun Sharma',
-    role: 'Investment Advisor',
-    location: 'Mumbai, India',
-    image: '/images/avatar-1.svg',
-    rating: 5,
-    text: 'The Submariner I purchased from Hilop is absolutely stunning. The authentication process was thorough, and the delivery was incredibly quick. Best luxury watch investment ever!',
-    verified: true,
-    purchaseDate: '2 months ago',
-    productName: 'Rolex Submariner'
-  },
-  {
-    id: 2,
-    name: 'Priya Patel',
-    role: 'Entrepreneur',
-    location: 'Bangalore, India',
-    image: '/images/avatar-2.svg',
-    rating: 5,
-    text: 'Hilop\'s customer service is exceptional. They helped me find the perfect watch within my budget. The warranty coverage gives me complete peace of mind.',
-    verified: true,
-    purchaseDate: '1 month ago',
-    productName: 'TAG Heuer Aquaracer'
-  },
-  {
-    id: 3,
-    name: 'Rajesh Nair',
-    role: 'Luxury Collector',
-    location: 'Delhi, India',
-    image: '/images/avatar-3.svg',
-    rating: 5,
-    text: 'Been collecting watches for 10 years, and Hilop consistently offers the finest selection. Their experts really know their craft. Highly recommended!',
-    verified: true,
-    purchaseDate: '3 weeks ago',
-    productName: 'Omega Seamaster'
-  },
-  {
-    id: 4,
-    name: 'Sanjana Gupta',
-    role: 'Corporate Executive',
-    location: 'Hyderabad, India',
-    image: '/images/avatar-4.svg',
-    rating: 5,
-    text: 'Perfect gift for my husband\'s milestone birthday. The presentation was elegant, and the watch arrived in pristine condition. Hilop exceeded all expectations!',
-    verified: true,
-    purchaseDate: '3 days ago',
-    productName: 'Breitling Navitimer'
-  },
-]
+import { useQuery } from '@tanstack/react-query'
+import api from '@/lib/api'
 
 export function Testimonials() {
+  const { data, isLoading } = useQuery({
+    queryKey: ['latest-testimonials'],
+    queryFn: async () => {
+      const res = await api.get('/reviews/latest', { params: { limit: 4 } })
+      return res.data.data || []
+    },
+  })
+
+  const items: any[] = data || []
+
   return (
     <section className="px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -67,10 +28,9 @@ export function Testimonials() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2 className="mb-4 text-3xl font-bold sm:text-4xl">Trusted by Watch Enthusiasts</h2>
+          <h2 className="mb-4 text-3xl font-bold sm:text-4xl">Customer Testimonials</h2>
           <p className="text-sm leading-6 text-gray-600 sm:text-base">
-            Join thousands of satisfied customers who have found their perfect timepiece at Hilop.
-            Read verified reviews from our community.
+            Hear from verified customers about their experiences — authenticity, service, and long-term value.
           </p>
         </motion.div>
 
@@ -81,57 +41,55 @@ export function Testimonials() {
           transition={{ staggerChildren: 0.1 }}
           viewport={{ once: true }}
         >
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={testimonial.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <Card className="h-full p-6 transition-all hover:border-hilop-green/30 hover:shadow-lg">
-                <div className="mb-4 flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-12 w-12 rounded-full bg-gray-200 overflow-hidden">
-                      <Image
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-gray-900">{testimonial.name}</h3>
-                        {testimonial.verified && (
-                          <CheckCircle2 className="h-4 w-4 text-hilop-green" title="Verified Purchase" />
-                        )}
+          {isLoading ? (
+            <div>Loading testimonials...</div>
+          ) : (
+            items.map((t: any, index: number) => (
+              <motion.div
+                key={t._id || index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="h-full p-6 transition-all hover:border-hilop-green/30 hover:shadow-lg">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-12 w-12 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-white">
+                        {/* Placeholder initials */}
+                        <span className="font-semibold text-lg text-gray-700">{(t.userName || 'U').charAt(0)}</span>
                       </div>
-                      <p className="text-xs text-gray-500">{testimonial.role}</p>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-gray-900">{t.userName || 'Customer'}</h3>
+                          <CheckCircle2 className="h-4 w-4 text-hilop-green" />
+                        </div>
+                        <p className="text-xs text-gray-500">{t.productName || ''}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="mb-3 flex items-center gap-1">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-4 w-4 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
-
-                <p className="mb-4 text-sm leading-6 text-gray-700">{testimonial.text}</p>
-
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>Purchased: {testimonial.productName}</span>
-                    <span>{testimonial.purchaseDate}</span>
+                  <div className="mb-3 flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${i < (t.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                      />
+                    ))}
                   </div>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
+
+                  <p className="mb-4 text-sm leading-6 text-gray-700">{t.content || t.title}</p>
+
+                  <div className="border-t border-gray-100 pt-4">
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>Purchased: {t.productName || '—'}</span>
+                      <span>{new Date(t.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))
+          )}
         </motion.div>
       </div>
     </section>

@@ -1,9 +1,11 @@
-import api from '@/lib/api'
-import { User, Address, ApiResponse } from '@/types'
+﻿import api from '@/lib/api'
+import { User, Address, CartItem, WishlistItem } from '@/types'
 
 export interface UpdateProfileData {
   name?: string
   avatar?: string
+  cartItems?: CartItem[]
+  wishlistItems?: WishlistItem[]
 }
 
 export interface AddAddressData {
@@ -30,12 +32,22 @@ export const usersService = {
   },
 
   async updateAddress(addressId: string, data: Partial<AddAddressData>): Promise<Address> {
-    const response = await api.patch(`/users/me/addresses/₹{addressId}`, data)
+    const response = await api.patch(`/users/me/addresses/${addressId}`, data)
     return response.data.data
   },
 
   async deleteAddress(addressId: string): Promise<void> {
-    await api.delete(`/users/me/addresses/₹{addressId}`)
+    await api.delete(`/users/me/addresses/${addressId}`)
+  },
+
+  async syncCart(items: CartItem[]): Promise<User> {
+    const response = await api.patch('/users/me', { cartItems: items })
+    return response.data.data
+  },
+
+  async syncWishlist(items: WishlistItem[]): Promise<User> {
+    const response = await api.patch('/users/me', { wishlistItems: items })
+    return response.data.data
   },
 
   async getAddresses(): Promise<Address[]> {

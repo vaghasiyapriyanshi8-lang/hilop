@@ -1,18 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-interface CartItem {
-  id: string
-  productId: string
-  name: string
-  price: number
-  image: string
-  quantity: number
-  variant?: {
-    size?: string
-    color?: string
-  }
-}
+import { usersService } from '@/services/api/users'
+import { CartItem } from '@/types'
 
 interface CartState {
   items: CartItem[]
@@ -23,12 +12,25 @@ interface CartState {
   updateQuantity: (productId: string, quantity: number, variant?: CartItem['variant']) => void
   clearCart: () => void
   getItem: (productId: string, variant?: CartItem['variant']) => CartItem | undefined
+  replaceCart: (items: CartItem[]) => void
 }
 
 const calculateTotals = (items: CartItem[]) => {
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
   return { total, itemCount }
+}
+
+const syncCartToServer = async (items: CartItem[]) => {
+  if (typeof window === 'undefined' || !localStorage.getItem('accessToken')) {
+    return
+  }
+
+  try {
+    await usersService.syncCart(items)
+  } catch {
+    // Ignore sync failures; local state still works and will retry on next mutation.
+  }
 }
 
 export const useCartStore = create<CartState>()(
@@ -55,13 +57,14 @@ export const useCartStore = create<CartState>()(
             ...items,
             {
               ...item,
-              id: `₹{item.productId}-₹{Date.now()}-₹{Math.random()}`,
+              id: `${item.productId}-${Date.now()}-${Math.random()}`,
             },
           ]
         }
 
         const { total, itemCount } = calculateTotals(newItems)
         set({ items: newItems, total, itemCount })
+        void syncCartToServer(newItems)
       },
 
       removeItem: (productId, variant) => {
@@ -75,6 +78,7 @@ export const useCartStore = create<CartState>()(
         )
         const { total, itemCount } = calculateTotals(newItems)
         set({ items: newItems, total, itemCount })
+        void syncCartToServer(newItems)
       },
 
       updateQuantity: (productId, quantity, variant) => {
@@ -88,9 +92,13 @@ export const useCartStore = create<CartState>()(
 
         const { total, itemCount } = calculateTotals(newItems)
         set({ items: newItems, total, itemCount })
+        void syncCartToServer(newItems)
       },
 
-      clearCart: () => set({ items: [], total: 0, itemCount: 0 }),
+      clearCart: () => {
+        set({ items: [], total: 0, itemCount: 0 })
+        void syncCartToServer([])
+      },
 
       getItem: (productId, variant) => {
         const { items } = get()
@@ -99,6 +107,11 @@ export const useCartStore = create<CartState>()(
             item.productId === productId &&
             JSON.stringify(item.variant) === JSON.stringify(variant)
         )
+      },
+
+      replaceCart: (items) => {
+        const { total, itemCount } = calculateTotals(items)
+        set({ items, total, itemCount })
       },
     }),
     {

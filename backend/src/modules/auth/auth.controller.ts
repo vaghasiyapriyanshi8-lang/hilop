@@ -12,6 +12,11 @@ export class AuthController {
     res.status(200).json(payload);
   }
 
+  static async googleLogin(req: Request, res: Response) {
+    const payload = await AuthService.googleLogin(req.body);
+    res.status(200).json(payload);
+  }
+
   static async refreshToken(req: Request, res: Response) {
     const payload = await AuthService.refresh(req.body.refreshToken);
     res.status(200).json(payload);
